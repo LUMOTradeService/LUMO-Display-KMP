@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "absolute:/Users/lumoloki/Documents/GitHub/LUMO-Display-KMP/controller/iosApp/controllerIosApp.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "container:../screen/iosApp/screenIosApp.xcodeproj">
+   </FileRef>
+</Workspace>

@@ -13,15 +13,15 @@ kotlin {
         iosSimulatorArm64()
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
-            baseName = "Shared"
+            baseName = "Core"
             isStatic = true
         }
     }
     
     jvm()
     
-    androidLibrary {
-       namespace = "com.lumopos.display.shared"
+    android {
+       namespace = "com.lumopos.display.core"
        compileSdk = libs.versions.android.compileSdk.get().toInt()
        minSdk = libs.versions.android.minSdk.get().toInt()
     

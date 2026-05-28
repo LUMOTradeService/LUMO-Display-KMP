@@ -13,6 +13,7 @@ kotlin {
 }
 dependencies {
     implementation(projects.screen.shared)
+    implementation(projects.screen.compose)
 
     implementation(libs.androidx.activity.compose)
 

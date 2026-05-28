@@ -2,7 +2,7 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "absolute:/Users/lumoloki/Documents/GitHub/LUMO-Display-KMP/controller/iosApp/controllerIosApp.xcodeproj">
+      location = "container:../controller/iosApp/controllerIosApp.xcodeproj">
    </FileRef>
    <FileRef
       location = "container:../screen/iosApp/screenIosApp.xcodeproj">

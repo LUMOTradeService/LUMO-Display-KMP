@@ -8,6 +8,7 @@ plugins {
 
 dependencies {
     implementation(projects.screen.shared)
+    implementation(projects.screen.compose)
 
     implementation(compose.desktop.currentOs)
     implementation(libs.kotlinx.coroutinesSwing)

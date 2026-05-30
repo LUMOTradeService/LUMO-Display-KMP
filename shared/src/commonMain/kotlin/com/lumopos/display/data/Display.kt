@@ -1,9 +1,11 @@
 package com.lumopos.display.data
 
 import kotlinx.serialization.Serializable
+import kotlin.uuid.Uuid
 
 @Serializable
 data class Display(
+    val id: Uuid = Uuid.random(),
     val deviceName: String = getDeviceName(),
     val appName: String,
     val appAuthor: String,

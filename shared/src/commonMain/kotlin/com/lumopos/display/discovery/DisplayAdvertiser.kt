@@ -8,6 +8,7 @@ import com.lumopos.display.data.Display
  * during the discovery process.
  */
 object DisplayAdvertiserConstants {
+    const val ID = "id"
     const val APP_NAME = "app_name"
     const val APP_AUTHOR = "app_author"
     const val APP_VERSION = "version"

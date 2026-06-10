@@ -4,7 +4,7 @@ import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
 import android.os.Build
 import android.os.ext.SdkExtensions
-import com.lumopos.display.data.Display
+import com.lumopos.display.data.model.Display
 import kotlinx.coroutines.channels.ProducerScope
 import kotlin.uuid.Uuid
 

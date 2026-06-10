@@ -1,6 +1,6 @@
 package com.lumopos.display.discovery
 
-import com.lumopos.display.data.Display
+import com.lumopos.display.data.model.Display
 
 /**
  * Constants used as metadata keys or configuration values when advertising the display service

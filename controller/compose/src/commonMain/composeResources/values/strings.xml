@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">LUMO Display Host</string>
+    <string name="title_displays">Displays</string>
+    <string name="title_dialog_pairing">Pairing request</string>
+    <string name="title_dialog_pairing_canceled">Pairing canceled</string>
+    <string name="title_dialog_already_paired">Already paired</string>
+    <string name="title_dialog_delete_display">Delete display</string>
+    <string name="title_dialog_edit_display">Edit display"</string>
+    <string name="text_displays_list_empty">Currently there are no displays</string>
+    <string name="text_displays_list_detail_placeholder">Select display</string>
+    <string name="text_dialog_pairing">"%1$s" would like to pair with your "%2$s". Confirm that this code is displayed on "%1$s".</string>
+    <string name="text_dialog_pairing_canceled">"%1$s" has canceled the pairing</string>
+    <string name="text_dialog_already_paired">"%1$s" is already paired.</string>
+    <string name="text_dialog_delete_display">Delete pairing with "%1$s"</string>
+    <string name="text_dialog_edit_display">Edit "%1$s" name</string>
+    <string name="text_diplay_online">Online</string>
+    <string name="text_diplay_offline">Offline</string>
+    <string name="supporting_displays_list_item">%1$s:%2$s</string>
+    <string name="request_close">Close</string>
+    <string name="request_cancel">Cancel</string>
+    <string name="request_pair">Pair</string>
+    <string name="request_delete">Delete</string>
+    <string name="request_edit">Edit</string>
+</resources>

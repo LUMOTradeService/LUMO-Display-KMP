@@ -3,7 +3,7 @@ package com.lumopos.display.discovery
 import android.content.Context
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
-import com.lumopos.display.data.Display
+import com.lumopos.display.data.model.Display
 import com.lumopos.display.discovery.extension.removeAvailableDisplay
 import com.lumopos.display.discovery.extension.resolve
 import kotlinx.coroutines.Dispatchers

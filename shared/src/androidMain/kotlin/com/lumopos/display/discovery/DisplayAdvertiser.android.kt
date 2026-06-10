@@ -3,9 +3,9 @@ package com.lumopos.display.discovery
 import android.content.Context
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
-import com.lumopos.display.data.Display
-import com.lumopos.display.data.currentAppVersion
-import com.lumopos.display.data.getDeviceName
+import com.lumopos.display.data.model.Display
+import com.lumopos.display.data.model.currentAppVersion
+import com.lumopos.display.data.model.getDeviceName
 
 @Suppress(names = ["EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING"])
 actual class DisplayAdvertiser(

@@ -1,6 +1,6 @@
 package com.lumopos.display.discovery
 
-import com.lumopos.display.data.Display
+import com.lumopos.display.data.model.Display
 import kotlinx.coroutines.flow.Flow
 
 /**

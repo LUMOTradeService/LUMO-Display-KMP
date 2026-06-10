@@ -1,7 +1,7 @@
 package com.lumopos.display.discovery
 
-import com.lumopos.display.data.Display
-import com.lumopos.display.data.currentAppVersion
+import com.lumopos.display.data.model.Display
+import com.lumopos.display.data.model.currentAppVersion
 import kotlinx.cinterop.BetaInteropApi
 import platform.Foundation.NSNetService
 import platform.Foundation.NSString

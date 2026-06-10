@@ -1,6 +1,6 @@
 package com.lumopos.display.discovery
 
-import com.lumopos.display.data.Display
+import com.lumopos.display.data.model.Display
 import com.lumopos.display.discovery.extension.netServiceBrowserDelegate
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.coroutines.channels.awaitClose

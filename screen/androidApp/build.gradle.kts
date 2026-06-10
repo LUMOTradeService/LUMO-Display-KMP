@@ -12,6 +12,8 @@ kotlin {
     }
 }
 dependencies {
+    implementation(projects.shared)
+    implementation(projects.compose)
     implementation(projects.screen.shared)
     implementation(projects.screen.compose)
 

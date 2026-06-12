@@ -26,7 +26,7 @@ kotlin {
         namespace = "com.lumopos.display.compose"
         compileSdk {
             version = release(libs.versions.android.compileSdk.get().toInt()) {
-                minorApiLevel = 1
+                minorApiLevel = 0
             }
         }
         minSdk = libs.versions.android.minSdk.get().toInt()

@@ -12,11 +12,11 @@ kotlin {
     android {
         namespace = "com.lumopos.display.data"
         compileSdk {
-            version = release(36) {
-                minorApiLevel = 1
+            version = release(libs.versions.android.compileSdk.get().toInt()) {
+                minorApiLevel = 0
             }
         }
-        minSdk = 30
+        minSdk = libs.versions.android.minSdk.get().toInt()
 
         withHostTestBuilder {
         }

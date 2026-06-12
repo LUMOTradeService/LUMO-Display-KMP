@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">LUMODisplayScreen</string>
+    <string name="app_name">LUMO Display</string>
+    <string name="app_author">LUMO trade service s.r.o.</string>
 </resources>

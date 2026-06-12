@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.flowOn
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 actual class DisplayDiscovery(
-    val context: Context
+    context: Context
 ) {
     private val nsdManager = context.getSystemService(
             Context.NSD_SERVICE
@@ -91,5 +91,4 @@ actual class DisplayDiscovery(
         }
         discoveryListeners.remove(serviceType)
     }
-
 }

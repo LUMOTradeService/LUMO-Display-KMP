@@ -12,7 +12,7 @@ kotlin {
     // which platforms this KMP module supports.
     // See: https://kotlinlang.org/docs/multiplatform-discover-project.html#targets
     android {
-        namespace = "com.lumopos.compose"
+        namespace = "com.lumopos.display.controller.compose"
         compileSdk {
             version = release(36) {
                 minorApiLevel = 1

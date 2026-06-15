@@ -12,7 +12,7 @@ kotlin {
     // which platforms this KMP module supports.
     // See: https://kotlinlang.org/docs/multiplatform-discover-project.html#targets
     android {
-        namespace = "com.lumopos.compose.app"
+        namespace = "com.lumopos.display.screen.compose.app"
         compileSdk {
             version = release(36) {
                 minorApiLevel = 1
@@ -62,7 +62,6 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(libs.kotlin.stdlib)
-                implementation(libs.kotlin.stdlib)
                 implementation(libs.compose.runtime)
                 implementation(libs.compose.foundation)
                 implementation(libs.compose.material3)
@@ -71,6 +70,7 @@ kotlin {
                 implementation(libs.compose.uiToolingPreview)
                 implementation(projects.compose)
                 implementation(projects.shared)
+                implementation(projects.screen.compose)
             }
         }
 

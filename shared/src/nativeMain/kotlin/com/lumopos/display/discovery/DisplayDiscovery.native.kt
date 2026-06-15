@@ -9,9 +9,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import platform.Foundation.NSNetServiceBrowser
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-actual class DisplayDiscovery(
-    val serviceType: String
-) {
+actual class DisplayDiscovery() {
     private var browsers: MutableMap<String, NSNetServiceBrowser> = mutableMapOf()
     private val availableDisplays: MutableList<Display> = mutableListOf()
 

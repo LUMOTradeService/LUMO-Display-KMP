@@ -32,16 +32,16 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
-include(":controller:androidApp")
-include(":controller:desktopApp")
+include(":controller:app:androidApp")
+include(":controller:app:desktopApp")
 include(":controller:shared")
-include(":screen:androidApp")
-include(":screen:desktopApp")
+include(":screen:app:androidApp")
+include(":screen:app:desktopApp")
 include(":screen:shared")
 include(":shared")
 include(":data")
 include(":controller:compose")
 include(":screen:compose")
 include(":compose")
-include(":controller:composeApp")
-include(":screen:composeApp")
+include(":controller:app:composeApp")
+include(":screen:app:composeApp")

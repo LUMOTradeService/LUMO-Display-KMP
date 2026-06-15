@@ -15,7 +15,7 @@ dependencies {
     implementation(projects.shared)
     implementation(projects.compose)
     implementation(projects.screen.shared)
-    implementation(projects.screen.composeApp)
+    implementation(projects.screen.app.composeApp)
 
     implementation(libs.androidx.activity.compose)
 

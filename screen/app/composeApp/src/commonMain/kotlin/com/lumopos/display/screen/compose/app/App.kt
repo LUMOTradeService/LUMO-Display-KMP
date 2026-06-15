@@ -9,4 +9,5 @@ expect fun LaunchDiscovery()
 
 @Composable
 fun App() {
+    LaunchDiscovery()
 }

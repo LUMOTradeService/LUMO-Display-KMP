@@ -34,6 +34,10 @@ kotlin {
         withHostTestBuilder {
         }
 
+        androidResources {
+            enable = true
+        }
+
         withDeviceTestBuilder {
             sourceSetTreeName = "test"
         }.configure {

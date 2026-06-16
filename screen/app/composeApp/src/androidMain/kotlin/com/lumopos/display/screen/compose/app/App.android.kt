@@ -2,18 +2,24 @@ package com.lumopos.display.screen.compose.app
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import com.lumopos.display.data.model.Display
+import com.lumopos.display.discovery.DisplayAdvertiser
 
 @Composable
-actual fun LaunchDiscovery() {
+actual fun rememberDisplayAdvertiser(
+    appName: String,
+    appAuthor: String,
+    serviceType: String
+): DisplayAdvertiser {
     val context = LocalContext.current
-    LaunchedEffect(Unit) {
-        val discovery = com.lumopos.display.discovery.DisplayAdvertiser(
+    return remember {
+        DisplayAdvertiser(
             context = context,
-            appName = "LUMO Display",
-            appAuthor = "LUMO trade service s.r.o.",
-            serviceType = "_display._tcp"
+            appName = appName,
+            appAuthor = appAuthor,
+            serviceType = serviceType
         )
-        discovery.advertise()
     }
 }

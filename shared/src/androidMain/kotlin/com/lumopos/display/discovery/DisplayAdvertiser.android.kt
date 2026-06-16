@@ -9,7 +9,7 @@ import com.lumopos.display.data.model.getDeviceName
 
 @Suppress(names = ["EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING"])
 actual class DisplayAdvertiser(
-    private val context: Context,
+    context: Context,
     appName: String,
     appAuthor: String,
     serviceType: String,

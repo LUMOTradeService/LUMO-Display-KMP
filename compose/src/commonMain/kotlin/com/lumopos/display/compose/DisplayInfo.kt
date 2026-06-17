@@ -1,15 +1,9 @@
 package com.lumopos.display.compose
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -25,6 +19,12 @@ import lumodisplay.compose.generated.resources.title_version
 import org.jetbrains.compose.resources.stringResource
 
 
+/**
+ * Adds a group of items to a [LazyListScope] that display information about the current device
+ * and application metadata, including the device name, IP address, app name, version, and author.
+ *
+ * @param display The [Display] data model containing the information to be shown in the list.
+ */
 fun LazyListScope.aboutDisplayItems(
     display: Display
 ) {
@@ -83,6 +83,12 @@ fun LazyListScope.aboutDisplayItems(
     }
 }
 
+/**
+ * A private composable that represents a single information row within the about section.
+ *
+ * @param headline The primary text label for the item.
+ * @param supporting The secondary descriptive text providing specific details for the item.
+ */
 @Composable
 private fun AboutDisplayItem(
     headline: String,
@@ -101,40 +107,4 @@ private fun AboutDisplayItem(
             )
         }
     )
-}
-
-@Composable
-fun DisplayInfoScreen(
-    display: Display,
-    topBar: @Composable () -> Unit = {},
-    content: LazyListScope.() -> Unit = {}
-) {
-    Scaffold(
-        topBar = topBar
-    ) { innerPadding ->
-        Surface(
-            modifier = Modifier.padding(innerPadding)
-        ) {
-            LazyColumn(
-                modifier = Modifier.padding(
-                    top = 16.dp,
-                    start = 16.dp,
-                    end = 16.dp
-                ),
-                verticalArrangement = Arrangement.spacedBy(2.dp)
-            ) {
-                content()
-                item(
-                    key = "Spacer"
-                ) {
-                    Spacer(
-                        modifier = Modifier.height(16.dp)
-                    )
-                }
-                aboutDisplayItems(
-                    display = display
-                )
-            }
-        }
-    }
 }

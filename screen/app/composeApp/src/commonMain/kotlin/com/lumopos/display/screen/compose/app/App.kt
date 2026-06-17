@@ -20,12 +20,17 @@ import kotlinx.serialization.modules.polymorphic
 internal data object DisplayNavKey: NavKey {
     @Serializable
     data object Setup: NavKey
+
+    @Serializable
+    data object App: NavKey {
+    }
 }
 
 internal val displaySavedStateConfiguration = SavedStateConfiguration {
     serializersModule = SerializersModule {
         polymorphic(NavKey::class) {
             subclass(DisplayNavKey.Setup::class, DisplayNavKey.Setup.serializer())
+            subclass(DisplayNavKey.App::class, DisplayNavKey.App.serializer())
         }
     }
 }

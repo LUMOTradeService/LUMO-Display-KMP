@@ -9,6 +9,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
+import com.lumopos.display.android.compose.theme.AppTheme
 import com.lumopos.display.discovery.DisplayAdvertiser
 import com.lumopos.display.screen.compose.SetupScreen
 import com.lumopos.display.screen.compose.viewModel.setupScreenViewModel
@@ -53,27 +54,29 @@ fun App() {
         displayAdvertiser = displayAdvertiser
     )
 
-    Surface {
-        NavDisplay(
-            backStack = rememberNavBackStack(
-                displaySavedStateConfiguration,
-                DisplayNavKey.Setup
-            ),
-            entryDecorators = listOf(
-                rememberSaveableStateHolderNavEntryDecorator(),
-                rememberViewModelStoreNavEntryDecorator()
-            ),
-            entryProvider = entryProvider {
-                entry<DisplayNavKey.Setup> {
-                    val setupScreenViewModel = setupScreenViewModel(
-                        displayAdvertiser = displayAdvertiser
-                    )
+    AppTheme {
+        Surface {
+            NavDisplay(
+                backStack = rememberNavBackStack(
+                    displaySavedStateConfiguration,
+                    DisplayNavKey.Setup
+                ),
+                entryDecorators = listOf(
+                    rememberSaveableStateHolderNavEntryDecorator(),
+                    rememberViewModelStoreNavEntryDecorator()
+                ),
+                entryProvider = entryProvider {
+                    entry<DisplayNavKey.Setup> {
+                        val setupScreenViewModel = setupScreenViewModel(
+                            displayAdvertiser = displayAdvertiser
+                        )
 
-                    SetupScreen(
-                        state = setupScreenViewModel.setupScreenState
-                    )
+                        SetupScreen(
+                            state = setupScreenViewModel.setupScreenState
+                        )
+                    }
                 }
-            }
-        )
+            )
+        }
     }
 }

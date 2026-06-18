@@ -1,6 +1,7 @@
 package com.lumopos.display.controller.compose.app
 
 import androidx.compose.runtime.Composable
+import com.lumopos.display.android.compose.theme.AppTheme
 import com.lumopos.display.controller.compose.DisplaysScreen
 import com.lumopos.display.controller.compose.state.DisplaysScreenState
 import com.lumopos.display.controller.compose.viewModel.rememberDisplaysScreenViewModel
@@ -17,9 +18,12 @@ fun App() {
         serviceType = "_display._tcp"
     )
 
-    DisplaysScreen(
-        state = DisplaysScreenState(
-            discoveredDisplays = displaysScreenViewModel.discoveredDisplays
+    AppTheme {
+        DisplaysScreen(
+            state = DisplaysScreenState(
+                discoveredDisplays = displaysScreenViewModel.discoveredDisplays
+            )
         )
-    )
+    }
 }
+

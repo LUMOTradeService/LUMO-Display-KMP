@@ -49,8 +49,7 @@ internal data object DisplaysNavKey: NavKey {
     @Serializable
     data class Detail(
         val display: Display
-    ): NavKey {
-    }
+    ): NavKey
 }
 
 internal val DisplaysSavedStateConfiguration = SavedStateConfiguration {

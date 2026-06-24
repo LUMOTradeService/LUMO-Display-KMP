@@ -79,7 +79,7 @@ fun SetupScreenPreview() {
     SetupScreen(
         state = SetupScreenState(
             display = Display(
-                appName = "LUMO Display",
+                appName = stringResource(Res.string.app_name),
                 appAuthor = "LUMO trade service s.r.o.",
                 version = "1.0.0",
                 serviceType = "_display._tcp.",

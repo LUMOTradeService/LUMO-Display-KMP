@@ -6,7 +6,6 @@ import android.provider.Settings
 import java.net.Inet4Address
 import java.net.NetworkInterface
 import java.net.ServerSocket
-import kotlin.collections.iterator
 
 actual fun getDeviceName(): String {
     val manufacturer = Build.MANUFACTURER

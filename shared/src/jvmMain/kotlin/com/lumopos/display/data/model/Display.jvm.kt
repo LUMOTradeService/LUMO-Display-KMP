@@ -4,7 +4,6 @@ import java.net.Inet4Address
 import java.net.InetAddress
 import java.net.NetworkInterface
 import java.net.ServerSocket
-import kotlin.collections.iterator
 
 actual fun getDeviceName(): String {
     val hostname = try {

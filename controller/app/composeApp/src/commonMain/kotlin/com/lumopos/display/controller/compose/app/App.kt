@@ -1,8 +1,8 @@
 package com.lumopos.display.controller.compose.app
 
 import androidx.compose.runtime.Composable
-import com.lumopos.display.android.compose.theme.AppTheme
 import com.lumopos.display.controller.compose.DisplaysScreen
+import com.lumopos.display.controller.compose.app.theme.AppTheme
 import com.lumopos.display.controller.compose.state.DisplaysScreenState
 import com.lumopos.display.controller.compose.viewModel.rememberDisplaysScreenViewModel
 import com.lumopos.display.discovery.DisplayDiscovery

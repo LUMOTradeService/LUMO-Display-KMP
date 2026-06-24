@@ -1,10 +1,8 @@
 package com.lumopos.display.screen.compose.app
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import com.lumopos.display.data.model.Display
 import com.lumopos.display.discovery.DisplayAdvertiser
 
 @Composable

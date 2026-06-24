@@ -2,7 +2,6 @@ package com.lumopos.display.android.compose.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import lumodisplay.screen.app.composeapp.generated.resources.Res

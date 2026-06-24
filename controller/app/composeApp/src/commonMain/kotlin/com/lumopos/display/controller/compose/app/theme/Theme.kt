@@ -1,4 +1,4 @@
-package com.lumopos.display.android.compose.theme
+package com.lumopos.display.controller.compose.app.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme

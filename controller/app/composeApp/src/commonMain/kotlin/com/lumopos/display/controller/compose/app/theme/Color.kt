@@ -1,4 +1,4 @@
-package com.lumopos.display.android.compose.theme
+package com.lumopos.display.controller.compose.app.theme
 import androidx.compose.ui.graphics.Color
 
 val primaryLight = Color(0xFF4C5C92)

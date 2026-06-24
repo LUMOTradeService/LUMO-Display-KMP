@@ -1,25 +1,24 @@
-package com.lumopos.display.android.compose.theme
+package com.lumopos.display.controller.compose.app.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import lumodisplay.screen.app.composeapp.generated.resources.Res
-import lumodisplay.screen.app.composeapp.generated.resources.comfortaa_bold
-import lumodisplay.screen.app.composeapp.generated.resources.comfortaa_light
-import lumodisplay.screen.app.composeapp.generated.resources.comfortaa_medium
-import lumodisplay.screen.app.composeapp.generated.resources.comfortaa_regular
-import lumodisplay.screen.app.composeapp.generated.resources.comfortaa_semibold
-import lumodisplay.screen.app.composeapp.generated.resources.montserrat_black
-import lumodisplay.screen.app.composeapp.generated.resources.montserrat_bold
-import lumodisplay.screen.app.composeapp.generated.resources.montserrat_extrabold
-import lumodisplay.screen.app.composeapp.generated.resources.montserrat_extralight
-import lumodisplay.screen.app.composeapp.generated.resources.montserrat_light
-import lumodisplay.screen.app.composeapp.generated.resources.montserrat_medium
-import lumodisplay.screen.app.composeapp.generated.resources.montserrat_regular
-import lumodisplay.screen.app.composeapp.generated.resources.montserrat_semibold
-import lumodisplay.screen.app.composeapp.generated.resources.montserrat_thin
+import lumodisplay.controller.app.composeapp.generated.resources.Res
+import lumodisplay.controller.app.composeapp.generated.resources.comfortaa_bold
+import lumodisplay.controller.app.composeapp.generated.resources.comfortaa_light
+import lumodisplay.controller.app.composeapp.generated.resources.comfortaa_medium
+import lumodisplay.controller.app.composeapp.generated.resources.comfortaa_regular
+import lumodisplay.controller.app.composeapp.generated.resources.comfortaa_semibold
+import lumodisplay.controller.app.composeapp.generated.resources.montserrat_black
+import lumodisplay.controller.app.composeapp.generated.resources.montserrat_bold
+import lumodisplay.controller.app.composeapp.generated.resources.montserrat_extrabold
+import lumodisplay.controller.app.composeapp.generated.resources.montserrat_extralight
+import lumodisplay.controller.app.composeapp.generated.resources.montserrat_light
+import lumodisplay.controller.app.composeapp.generated.resources.montserrat_medium
+import lumodisplay.controller.app.composeapp.generated.resources.montserrat_regular
+import lumodisplay.controller.app.composeapp.generated.resources.montserrat_semibold
+import lumodisplay.controller.app.composeapp.generated.resources.montserrat_thin
 import org.jetbrains.compose.resources.Font
 
 @Composable

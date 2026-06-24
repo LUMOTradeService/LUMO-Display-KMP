@@ -21,7 +21,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
-import kotlinx.serialization.Serializable
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -31,6 +30,7 @@ import androidx.savedstate.serialization.SavedStateConfiguration
 import com.lumopos.display.controller.compose.state.DisplaysScreenState
 import com.lumopos.display.data.model.Display
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import lumodisplay.controller.compose.generated.resources.Res
@@ -38,7 +38,6 @@ import lumodisplay.controller.compose.generated.resources.monitor
 import lumodisplay.controller.compose.generated.resources.supporting_displays_list_item
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import kotlin.collections.listOf
 
 
 @Serializable

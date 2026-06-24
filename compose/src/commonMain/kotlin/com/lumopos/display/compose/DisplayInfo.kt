@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.lumopos.display.data.model.Display
 import lumodisplay.compose.generated.resources.Res
+import lumodisplay.compose.generated.resources.app_name
 import lumodisplay.compose.generated.resources.text_manual
 import lumodisplay.compose.generated.resources.text_terms_and_services
 import lumodisplay.compose.generated.resources.title_about_device_and_app
@@ -45,13 +46,15 @@ fun LazyListScope.additionalContent(
             shapes = ListItemDefaults.segmentedShapes(
                 index = 0,
                 count = 2
+            ),
+            colors = ListItemDefaults.segmentedColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainerLowest
             )
         )
     }
     item(
         key = "Manual"
     ) {
-
         SegmentedListItem(
             onClick = {},
             content = {
@@ -61,12 +64,15 @@ fun LazyListScope.additionalContent(
             },
             supportingContent = {
                 Text(
-                    text = stringResource(Res.string.text_manual)
+                    text = stringResource(Res.string.text_manual, stringResource(Res.string.app_name))
                 )
             },
             shapes = ListItemDefaults.segmentedShapes(
                 index = 1,
                 count = 2
+            ),
+            colors = ListItemDefaults.segmentedColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainerLowest
             )
         )
     }
@@ -148,8 +154,7 @@ private fun AboutDisplayItem(
     supporting: String
 ) {
     ListItem(
-        onClick = {},
-        content = {
+        headlineContent = {
             Text(
                 text = headline
             )

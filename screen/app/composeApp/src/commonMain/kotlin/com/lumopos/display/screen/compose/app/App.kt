@@ -50,10 +50,6 @@ fun App() {
         serviceType = "_display._tcp."
     )
 
-    val setupScreenViewModel = setupScreenViewModel(
-        displayAdvertiser = displayAdvertiser
-    )
-
     AppTheme {
         Surface {
             NavDisplay(

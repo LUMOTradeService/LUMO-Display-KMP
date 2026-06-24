@@ -9,7 +9,7 @@ import com.lumopos.display.screen.compose.state.SetupScreenState
 import kotlinx.coroutines.launch
 
 class SetupScreenViewModel(
-    displayAdvertiser: DisplayAdvertiser
+    val displayAdvertiser: DisplayAdvertiser
 ): ViewModel() {
     val setupScreenState = SetupScreenState(
         display = displayAdvertiser.display

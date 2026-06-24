@@ -2,17 +2,21 @@ package com.lumopos.display.compose
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.lumopos.display.data.model.Display
 import lumodisplay.compose.generated.resources.Res
 import lumodisplay.compose.generated.resources.app_name
+import lumodisplay.compose.generated.resources.docs
+import lumodisplay.compose.generated.resources.quick_reference
 import lumodisplay.compose.generated.resources.text_manual
 import lumodisplay.compose.generated.resources.text_terms_and_services
 import lumodisplay.compose.generated.resources.title_about_device_and_app
@@ -23,6 +27,7 @@ import lumodisplay.compose.generated.resources.title_ip_address
 import lumodisplay.compose.generated.resources.title_manual
 import lumodisplay.compose.generated.resources.title_terms_and_services
 import lumodisplay.compose.generated.resources.title_version
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 fun LazyListScope.additionalContent(
@@ -33,6 +38,12 @@ fun LazyListScope.additionalContent(
     ) {
         SegmentedListItem(
             onClick = {},
+            leadingContent = {
+                Icon(
+                    painter = painterResource(Res.drawable.docs),
+                    contentDescription = null
+                )
+            },
             content = {
                 Text(
                     text = stringResource(Res.string.title_terms_and_services)
@@ -49,7 +60,8 @@ fun LazyListScope.additionalContent(
             ),
             colors = ListItemDefaults.segmentedColors(
                 containerColor = MaterialTheme.colorScheme.surfaceContainerLowest
-            )
+            ),
+            verticalAlignment = Alignment.CenterVertically
         )
     }
     item(
@@ -57,6 +69,12 @@ fun LazyListScope.additionalContent(
     ) {
         SegmentedListItem(
             onClick = {},
+            leadingContent = {
+                Icon(
+                    painter = painterResource(Res.drawable.quick_reference),
+                    contentDescription = null
+                )
+            },
             content = {
                 Text(
                     text = stringResource(Res.string.title_manual)
@@ -73,7 +91,8 @@ fun LazyListScope.additionalContent(
             ),
             colors = ListItemDefaults.segmentedColors(
                 containerColor = MaterialTheme.colorScheme.surfaceContainerLowest
-            )
+            ),
+            verticalAlignment = Alignment.CenterVertically
         )
     }
 }

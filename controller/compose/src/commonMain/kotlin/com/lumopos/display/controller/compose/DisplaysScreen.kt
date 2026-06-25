@@ -147,14 +147,6 @@ fun DisplaysScreen(
     val listDetailSceneStrategy = rememberListDetailSceneStrategy<NavKey>()
     val discoveredDisplays by state.discoveredDisplays.collectAsStateWithLifecycle()
 
-    Scaffold { paddingValues ->
-        Surface(
-            modifier = Modifier.padding(paddingValues)
-        ) {
-            DisplaysListPane(discoveredDisplays)
-        }
-    }
-
     NavDisplay(
         backStack = rememberNavBackStack(DisplaysSavedStateConfiguration, DisplaysNavKey.List),
         sceneStrategies = listOf(

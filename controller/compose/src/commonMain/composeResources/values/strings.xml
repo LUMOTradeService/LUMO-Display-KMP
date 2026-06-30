@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">LUMO Display Host</string>
+    <string name="app_name">LUMO Display</string>
     <string name="title_displays">Displays</string>
     <string name="title_dialog_pairing">Pairing request</string>
     <string name="title_dialog_pairing_canceled">Pairing canceled</string>

@@ -1,2 +1,5 @@
 <resources>
+    <string name="app_name">LUMO Controller</string>
+    <string name="title_displays">Displays</string>
+    <string name="request_back">Back</string>
 </resources>

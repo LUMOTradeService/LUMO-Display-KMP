@@ -1,8 +1,11 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidMultiplatformLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.androidLint)
 }
 
@@ -10,6 +13,7 @@ kotlin {
     compilerOptions {
         optIn.add("androidx.compose.material3.ExperimentalMaterial3Api")
         optIn.add("androidx.compose.material3.ExperimentalMaterial3ExpressiveApi")
+        optIn.add("androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi")
     }
 
     // Target declarations - add or remove as needed below. These define
@@ -24,13 +28,14 @@ kotlin {
         }
         minSdk = 30
 
-        withHostTestBuilder {
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_11
         }
-
-        withDeviceTestBuilder {
-            sourceSetTreeName = "test"
-        }.configure {
-            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        androidResources {
+            enable = true
+        }
+        withHostTest {
+            isIncludeAndroidResources = true
         }
     }
 
@@ -71,9 +76,12 @@ kotlin {
                 implementation(libs.compose.material3)
                 implementation(libs.compose.ui)
                 implementation(libs.compose.components.resources)
+                implementation(libs.compose.material3.adaptive.navigation3)
+                implementation(libs.compose.navigation3.ui)
                 implementation(libs.androidx.lifecycle.viewmodelCompose)
                 implementation(libs.androidx.lifecycle.runtimeCompose)
                 implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+                implementation(libs.kotlinx.serialization.json)
                 implementation(libs.compose.uiToolingPreview)
                 implementation(projects.compose)
                 implementation(projects.shared)
@@ -93,14 +101,6 @@ kotlin {
                 // Add Android-specific dependencies here. Note that this source set depends on
                 // commonMain by default and will correctly pull the Android artifacts of any KMP
                 // dependencies declared in commonMain.
-            }
-        }
-
-        getByName("androidDeviceTest") {
-            dependencies {
-                implementation(libs.androidx.core)
-                implementation(libs.androidx.runner)
-                implementation(libs.androidx.testExt.junit)
             }
         }
 

@@ -4,7 +4,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -21,6 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
+import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -34,6 +37,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import lumodisplay.controller.compose.generated.resources.Res
+import lumodisplay.controller.compose.generated.resources.arrow_back
 import lumodisplay.controller.compose.generated.resources.monitor
 import lumodisplay.controller.compose.generated.resources.supporting_displays_list_item
 import org.jetbrains.compose.resources.painterResource
@@ -62,16 +66,16 @@ internal val DisplaysSavedStateConfiguration = SavedStateConfiguration {
 
 @Composable
 private fun DisplaysListPane(
-    availableDisplays: List<Display>
+    backStack: NavBackStack<NavKey>,
+    title: @Composable () -> Unit = {},
+    availableDisplays: List<Display>,
+    navigationIcon: @Composable () -> Unit = {}
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {
-                    Text(
-                        text = "Displays"
-                    )
-                }
+                navigationIcon = navigationIcon,
+                title = title
             )
         }
     ) { paddingValues ->
@@ -79,9 +83,29 @@ private fun DisplaysListPane(
             modifier = Modifier.padding(paddingValues)
         ) {
             LazyColumn(
-                contentPadding = PaddingValues(16.dp),
+                contentPadding = PaddingValues(
+                    top = 16.dp,
+                    start = 8.dp,
+                    end = 8.dp
+                ),
                 verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)
             ) {
+                item(
+                    key = "test-display"
+                ) {
+                    Button(
+                        onClick = {
+                            backStack.add(DisplaysNavKey.Detail(Display(
+                                appName = "Hello display",
+                                appAuthor = "LUMO trade service",
+                                version = "1.0.0",
+                                serviceType = "_display._tcp."
+                            )))
+                        }
+                    ) {
+                        Text("Hello display")
+                    }
+                }
                 items(
                     count = availableDisplays.size,
                     key = { index ->
@@ -128,27 +152,42 @@ private fun DisplaysListPane(
 
 @Composable
 fun DisplaysDetailPane() {
-    Text(
-        text = "Display detail"
-    )
+    Scaffold { paddingValues ->
+        Surface(
+            modifier = Modifier.padding(paddingValues)
+        ) {
+            Text(
+                text = "Display detail"
+            )
+        }
+    }
 }
 
 @Composable
 fun DisplaysDetailPanePlaceholder() {
-    Text(
-        text = "Placeholder"
-    )
+    Scaffold { paddingValues ->
+        Surface(
+            modifier = Modifier.padding(paddingValues)
+        ) {
+            Text(
+                text = "Placeholder"
+            )
+        }
+    }
 }
 
 @Composable
 fun DisplaysScreen(
+    navigationIcon: @Composable () -> Unit = {},
+    title: @Composable () -> Unit = {},
     state: DisplaysScreenState
 ) {
     val listDetailSceneStrategy = rememberListDetailSceneStrategy<NavKey>()
     val discoveredDisplays by state.discoveredDisplays.collectAsStateWithLifecycle()
+    val backStack = rememberNavBackStack(DisplaysSavedStateConfiguration, DisplaysNavKey.List)
 
     NavDisplay(
-        backStack = rememberNavBackStack(DisplaysSavedStateConfiguration, DisplaysNavKey.List),
+        backStack = backStack,
         sceneStrategies = listOf(
             listDetailSceneStrategy
         ),
@@ -164,7 +203,11 @@ fun DisplaysScreen(
                     }
                 )
             ) {
-                DisplaysListPane(discoveredDisplays)
+                DisplaysListPane(
+                    backStack = backStack,
+                    navigationIcon = navigationIcon,
+                    availableDisplays = discoveredDisplays
+                )
             }
             entry<DisplaysNavKey.Detail>(
                 metadata = ListDetailSceneStrategy.detailPane()

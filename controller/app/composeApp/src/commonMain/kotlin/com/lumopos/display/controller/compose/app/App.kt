@@ -32,7 +32,10 @@ import kotlin.collections.listOf
 internal sealed interface ControllerNavKey: NavKey
 
 @Serializable
-data object DisplaysNavKey: NavKey
+internal data object CounterNavKey: ControllerNavKey
+
+@Serializable
+internal data object DisplaysNavKey: NavKey
 @OptIn(ExperimentalSerializationApi::class)
 internal val controllerSavedStateConfiguration = SavedStateConfiguration {
     serializersModule = SerializersModule {

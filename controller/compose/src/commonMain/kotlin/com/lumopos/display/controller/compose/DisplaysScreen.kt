@@ -45,7 +45,7 @@ import org.jetbrains.compose.resources.stringResource
 
 
 @Serializable
-internal data object DisplaysNavKey: NavKey {
+private data object DisplaysNavKey: NavKey {
     @Serializable
     data object List: NavKey
 
@@ -55,7 +55,7 @@ internal data object DisplaysNavKey: NavKey {
     ): NavKey
 }
 
-internal val DisplaysSavedStateConfiguration = SavedStateConfiguration {
+private val DisplaysSavedStateConfiguration = SavedStateConfiguration {
     serializersModule = SerializersModule {
         polymorphic(NavKey::class) {
             subclass(DisplaysNavKey.List::class, DisplaysNavKey.List.serializer())

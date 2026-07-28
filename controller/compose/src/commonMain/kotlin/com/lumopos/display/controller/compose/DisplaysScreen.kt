@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -37,7 +36,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import lumodisplay.controller.compose.generated.resources.Res
-import lumodisplay.controller.compose.generated.resources.arrow_back
 import lumodisplay.controller.compose.generated.resources.monitor
 import lumodisplay.controller.compose.generated.resources.supporting_displays_list_item
 import org.jetbrains.compose.resources.painterResource

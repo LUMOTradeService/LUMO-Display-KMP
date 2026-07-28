@@ -2,9 +2,15 @@ package com.lumopos.display.discovery.extension
 
 import com.lumopos.display.data.model.Display
 import com.lumopos.display.discovery.DisplayAdvertiserConstants
-import com.lumopos.display.pair.DisplayPairingConstants
+import kotlinx.atomicfu.locks.SynchronizedObject
+import kotlinx.atomicfu.locks.synchronized
 import kotlinx.cinterop.BetaInteropApi
+import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.ObjCSignatureOverride
+import kotlinx.cinterop.pointed
+import kotlinx.cinterop.readValue
+import kotlinx.cinterop.reinterpret
+import kotlinx.cinterop.toKString
 import kotlinx.coroutines.channels.ProducerScope
 import platform.Foundation.NSData
 import platform.Foundation.NSNetService
@@ -15,10 +21,14 @@ import platform.Foundation.NSString
 import platform.Foundation.NSUTF8StringEncoding
 import platform.Foundation.create
 import platform.darwin.NSObject
+import platform.darwin.inet_ntoa
+import platform.posix.AF_INET
+import platform.posix.sockaddr
+import platform.posix.sockaddr_in
 import kotlin.uuid.Uuid
 
 internal fun ProducerScope<List<Display>>.netServiceBrowserDelegate(
-    availableDisplays: MutableList<Display>,
+    discoveredDisplays: MutableList<Display>,
 ): NSNetServiceBrowserDelegateProtocol {
     return object : NSObject(), NSNetServiceBrowserDelegateProtocol {
         @ObjCSignatureOverride
@@ -27,7 +37,7 @@ internal fun ProducerScope<List<Display>>.netServiceBrowserDelegate(
             didFindService: NSNetService,
             moreComing: Boolean
         ) {
-            netServiceBrowserResolve(didFindService, availableDisplays)
+            resolve(didFindService, discoveredDisplays)
         }
 
         @ObjCSignatureOverride
@@ -36,7 +46,7 @@ internal fun ProducerScope<List<Display>>.netServiceBrowserDelegate(
             didRemoveService: NSNetService,
             moreComing: Boolean
         ) {
-            netServiceBrowserResolve(didRemoveService, availableDisplays, false)
+            resolve(didRemoveService, discoveredDisplays, isFound = false)
         }
     }
 }
@@ -50,54 +60,74 @@ internal fun ProducerScope<List<Display>>.netServiceBrowserDelegate(
  * to the flow collector.
  *
  * @param service The [NSNetService] instance representing the service to be resolved.
- * @param availableDisplays The mutable list of available displays to be updated.
- * @param update A flag indicating whether to update the list of available displays.
+ * @param discoveredDisplays The mutable list of available displays to be updated.
  */
-@OptIn(BetaInteropApi::class)
-internal fun ProducerScope<List<Display>>.netServiceBrowserResolve(
+@OptIn(BetaInteropApi::class, ExperimentalForeignApi::class)
+internal fun ProducerScope<List<Display>>.resolve(
     service: NSNetService,
-    availableDisplays: MutableList<Display>,
-    update: Boolean = true
+    discoveredDisplays: MutableList<Display>,
+    isFound: Boolean = true
 ) {
     service.resolveWithTimeout(5.0)
     service.delegate = object : NSObject(), NSNetServiceDelegateProtocol {
         override fun netServiceDidResolveAddress(sender: NSNetService) {
-            val txtData = sender.TXTRecordData()
-            val dict =
-                if (txtData != null) NSNetService.dictionaryFromTXTRecordData(txtData) else null
-
-            fun getTxtValue(key: String): String? {
-                val data = dict?.getValue(key) as NSData
-                return NSString.create(data, NSUTF8StringEncoding)?.toString()
-            }
-
-            val id = Uuid.parse(getTxtValue(DisplayAdvertiserConstants.ID) ?: return)
-
-            availableDisplays.removeAll { it.id == id }
-            if (update) {
-                availableDisplays.add(
-                    Display(
-                        id = id,
-                        name = sender.name,
-                        ipAddress = sender.addresses?.first().toString(),
-                        port = sender.port.toInt(),
-                        pairingPath = getTxtValue(DisplayAdvertiserConstants.PAIRING_PATH)
-                            ?: DisplayPairingConstants.PAIRING_PATH_DEFAULT,
-                        sessionPath = getTxtValue(DisplayAdvertiserConstants.SESSION_PATH)
-                            ?: Display.SESSION_PATH_DEFAULT,
-                        serviceType = getTxtValue(DisplayAdvertiserConstants.SERVICE_TYPE)
-                            ?: "unknown",
-                        appName = getTxtValue(DisplayAdvertiserConstants.APP_NAME)
-                            ?: "unknown",
-                        appAuthor = getTxtValue(DisplayAdvertiserConstants.APP_AUTHOR)
-                            ?: "unknown",
-                        version = getTxtValue(DisplayAdvertiserConstants.APP_VERSION)
+            val lock = SynchronizedObject()
+            synchronized(lock) {
+                val displayId = try {
+                    sender.getTxtValue(DisplayAdvertiserConstants.ID)?.let {
+                        Uuid.parse(it)
+                    } ?: return
+                } catch (_: Exception) {
+                    return
+                }
+                discoveredDisplays.removeAll { it.id == displayId }
+                if (isFound) {
+                    val ipAddress =
+                        sender.addresses?.firstOrNull()?.let { it as NSData }?.toIpAddress()
                             ?: "unknown"
+                    discoveredDisplays.add(
+                        Display(
+                            id = displayId,
+                            deviceName = sender.name,
+                            ipAddress = ipAddress,
+                            port = sender.port.toInt(),
+                            serviceType = sender.getTxtValue(DisplayAdvertiserConstants.SERVICE_TYPE)
+                                ?: "unknown",
+                            appName = sender.getTxtValue(DisplayAdvertiserConstants.APP_NAME)
+                                ?: "unknown",
+                            appAuthor = sender.getTxtValue(DisplayAdvertiserConstants.APP_AUTHOR)
+                                ?: "unknown",
+                            version = sender.getTxtValue(DisplayAdvertiserConstants.APP_VERSION)
+                                ?: "unknown"
+                        )
                     )
+                }
+                trySend(
+                    discoveredDisplays.toList()
                 )
             }
-
-            trySend(availableDisplays.toList())
         }
+    }
+}
+
+@OptIn(BetaInteropApi::class)
+private fun NSNetService.getTxtValue(key: String): String? {
+    val txtData = TXTRecordData() ?: return null
+
+    val dict = NSNetService.dictionaryFromTXTRecordData(txtData)
+
+    val data = dict[key] as? NSData ?: return null
+    return NSString.create(data, NSUTF8StringEncoding)?.toString()
+}
+
+@OptIn(ExperimentalForeignApi::class)
+private fun NSData.toIpAddress(): String? {
+    val bytes = bytes ?: return null
+    val sockaddr = bytes.reinterpret<sockaddr>()
+    return if (sockaddr.pointed.sa_family.toInt() == AF_INET) {
+        val sockaddrIn = bytes.reinterpret<sockaddr_in>()
+        inet_ntoa(sockaddrIn.pointed.sin_addr.readValue())?.toKString()
+    } else {
+        null
     }
 }

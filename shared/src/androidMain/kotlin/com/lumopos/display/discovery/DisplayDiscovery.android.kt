@@ -21,26 +21,26 @@ actual class DisplayDiscovery(
             Context.NSD_SERVICE
         ) as NsdManager
     private var discoveryListeners: MutableMap<String, NsdManager.DiscoveryListener> = mutableMapOf()
-    private val discoveredDisplaysM: MutableMap<String, MutableList<Display>> = mutableMapOf()
+    private val discoveredDisplays: MutableMap<String, MutableList<Display>> = mutableMapOf()
 
     actual fun discover(serviceType: String): Flow<List<Display>> = callbackFlow {
         val discoveryListener = object : NsdManager.DiscoveryListener {
             override fun onServiceFound(service: NsdServiceInfo) {
-                if (!discoveredDisplaysM.containsKey(serviceType)) {
-                    discoveredDisplaysM[serviceType] = mutableListOf()
+                if (!discoveredDisplays.containsKey(serviceType)) {
+                    discoveredDisplays[serviceType] = mutableListOf()
                 }
 
-                discoveredDisplaysM[serviceType]?.let {
+                discoveredDisplays[serviceType]?.let {
                     foundResolve(nsdManager, service, it)
                 }
             }
             override fun onServiceLost(service: NsdServiceInfo) {
-                discoveredDisplaysM[serviceType]?.let {
+                discoveredDisplays[serviceType]?.let {
                     lostResolve(service, it)
                 }
             }
             override fun onDiscoveryStarted(serviceType: String) {
-                discoveredDisplaysM[serviceType]?.let {
+                discoveredDisplays[serviceType]?.let {
                     startedResolve(it)
                 }
             }

@@ -26,13 +26,8 @@ actual class DisplayDiscovery(
     actual fun discover(serviceType: String): Flow<List<Display>> = callbackFlow {
         val discoveryListener = object : NsdManager.DiscoveryListener {
             override fun onServiceFound(service: NsdServiceInfo) {
-                if (!discoveredDisplays.containsKey(serviceType)) {
-                    discoveredDisplays[serviceType] = mutableListOf()
-                }
-
-                discoveredDisplays[serviceType]?.let {
-                    foundResolve(nsdManager, service, it)
-                }
+                val displays = discoveredDisplays.getOrPut(serviceType) { mutableListOf() }
+                foundResolve(nsdManager, service, displays)
             }
             override fun onServiceLost(service: NsdServiceInfo) {
                 discoveredDisplays[serviceType]?.let {

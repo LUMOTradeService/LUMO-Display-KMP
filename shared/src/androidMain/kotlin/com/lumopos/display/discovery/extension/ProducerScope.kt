@@ -27,7 +27,7 @@ private fun ProducerScope<List<Display>>.foundDisplay(
 
     synchronized(lock) {
         val displayId = service.id ?: Uuid.random()
-        val version = service.appVersion
+
         discoveredDisplays.removeAll { it.id == displayId }
         discoveredDisplays.add(
             Display(
@@ -37,7 +37,7 @@ private fun ProducerScope<List<Display>>.foundDisplay(
                 port = service.port,
                 appName = service.appName,
                 appAuthor = service.appAuthor,
-                version = version,
+                version = service.appVersion,
                 serviceType = service.serviceType
             )
         )

@@ -1,133 +1,68 @@
 package com.lumopos.display.discovery.extension
 
 import com.lumopos.display.data.model.Display
-import com.lumopos.display.discovery.DisplayAdvertiserConstants
-import kotlinx.atomicfu.locks.SynchronizedObject
-import kotlinx.atomicfu.locks.synchronized
-import kotlinx.cinterop.BetaInteropApi
+import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.cinterop.ObjCSignatureOverride
-import kotlinx.cinterop.pointed
-import kotlinx.cinterop.readValue
+import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.readBytes
 import kotlinx.cinterop.reinterpret
 import kotlinx.cinterop.toKString
 import kotlinx.coroutines.channels.ProducerScope
-import platform.Foundation.NSData
-import platform.Foundation.NSNetService
-import platform.Foundation.NSNetServiceBrowser
-import platform.Foundation.NSNetServiceBrowserDelegateProtocol
-import platform.Foundation.NSNetServiceDelegateProtocol
-import platform.Foundation.NSString
-import platform.Foundation.NSUTF8StringEncoding
-import platform.Foundation.create
-import platform.darwin.NSObject
-import platform.darwin.inet_ntoa
-import platform.posix.AF_INET
-import platform.posix.sockaddr
-import platform.posix.sockaddr_in
-import kotlin.uuid.Uuid
+import platform.Network.nw_browse_result_copy_endpoint
+import platform.Network.nw_browse_result_copy_txt_record_object
+import platform.Network.nw_browse_result_t
+import platform.Network.nw_endpoint_get_bonjour_service_name
+import platform.Network.nw_txt_record_access_key
+import platform.Network.nw_txt_record_find_key_non_empty_value
 
-internal fun ProducerScope<List<Display>>.netServiceBrowserDelegate(
-    discoveredDisplays: MutableList<Display>,
-): NSNetServiceBrowserDelegateProtocol {
-    return object : NSObject(), NSNetServiceBrowserDelegateProtocol {
-        @ObjCSignatureOverride
-        override fun netServiceBrowser(
-            browser: NSNetServiceBrowser,
-            didFindService: NSNetService,
-            moreComing: Boolean
-        ) {
-            resolve(didFindService, discoveredDisplays)
-        }
+@OptIn(ExperimentalForeignApi::class)
+fun nw_browse_result_t.readTxtValue(key: String): String? {
+    val txtRecord = nw_browse_result_copy_txt_record_object(this) ?: return null
+    var value: String? = null
 
-        @ObjCSignatureOverride
-        override fun netServiceBrowser(
-            browser: NSNetServiceBrowser,
-            didRemoveService: NSNetService,
-            moreComing: Boolean
-        ) {
-            resolve(didRemoveService, discoveredDisplays, isFound = false)
-        }
-    }
-}
-
-/**
- * Resolves a network service using the provided [NSNetService] and emits the result
- * or any potential errors through the [ProducerScope].
- *
- * This extension function handles the asynchronous process of resolving a service's
- * network address and metadata, ensuring that the results are communicated back
- * to the flow collector.
- *
- * @param service The [NSNetService] instance representing the service to be resolved.
- * @param discoveredDisplays The mutable list of available displays to be updated.
- */
-@OptIn(BetaInteropApi::class, ExperimentalForeignApi::class)
-internal fun ProducerScope<List<Display>>.resolve(
-    service: NSNetService,
-    discoveredDisplays: MutableList<Display>,
-    isFound: Boolean = true
-) {
-    service.resolveWithTimeout(5.0)
-    service.delegate = object : NSObject(), NSNetServiceDelegateProtocol {
-        override fun netServiceDidResolveAddress(sender: NSNetService) {
-            val lock = SynchronizedObject()
-            synchronized(lock) {
-                val displayId = try {
-                    sender.getTxtValue(DisplayAdvertiserConstants.ID)?.let {
-                        Uuid.parse(it)
-                    } ?: return
-                } catch (_: Exception) {
-                    return
-                }
-                discoveredDisplays.removeAll { it.id == displayId }
-                if (isFound) {
-                    val ipAddress =
-                        sender.addresses?.firstOrNull()?.let { it as NSData }?.toIpAddress()
-                            ?: "unknown"
-                    discoveredDisplays.add(
-                        Display(
-                            id = displayId,
-                            deviceName = sender.name,
-                            ipAddress = ipAddress,
-                            port = sender.port.toInt(),
-                            serviceType = sender.getTxtValue(DisplayAdvertiserConstants.SERVICE_TYPE)
-                                ?: "unknown",
-                            appName = sender.getTxtValue(DisplayAdvertiserConstants.APP_NAME)
-                                ?: "unknown",
-                            appAuthor = sender.getTxtValue(DisplayAdvertiserConstants.APP_AUTHOR)
-                                ?: "unknown",
-                            version = sender.getTxtValue(DisplayAdvertiserConstants.APP_VERSION)
-                                ?: "unknown"
-                        )
-                    )
-                }
-                trySend(
-                    discoveredDisplays.toList()
-                )
+    memScoped {
+        nw_txt_record_access_key(txtRecord, key) { _, found, bytes, length ->
+            if (found == nw_txt_record_find_key_non_empty_value && bytes != null) {
+                value = bytes.reinterpret<ByteVar>().readBytes(length.toInt()).decodeToString()
             }
+            true
         }
     }
-}
-
-@OptIn(BetaInteropApi::class)
-private fun NSNetService.getTxtValue(key: String): String? {
-    val txtData = TXTRecordData() ?: return null
-
-    val dict = NSNetService.dictionaryFromTXTRecordData(txtData)
-
-    val data = dict[key] as? NSData ?: return null
-    return NSString.create(data, NSUTF8StringEncoding)?.toString()
+    return value
 }
 
 @OptIn(ExperimentalForeignApi::class)
-private fun NSData.toIpAddress(): String? {
-    val bytes = bytes ?: return null
-    val sockaddr = bytes.reinterpret<sockaddr>()
-    return if (sockaddr.pointed.sa_family.toInt() == AF_INET) {
-        val sockaddrIn = bytes.reinterpret<sockaddr_in>()
-        inet_ntoa(sockaddrIn.pointed.sin_addr.readValue())?.toKString()
-    } else {
-        null
+fun ProducerScope<List<Display>>.foundResolve(
+    newResult: nw_browse_result_t,
+    displays: MutableList<Display>,
+    serviceType: String
+) {
+    val endpoint = nw_browse_result_copy_endpoint(newResult)
+    val serviceName = nw_endpoint_get_bonjour_service_name(endpoint)?.toKString() ?: "unknown"
+
+    displays.add(
+        Display(
+            deviceName = serviceName,
+            appName = newResult.appName,
+            appAuthor = newResult.appAuthor,
+            version = newResult.version,
+            serviceType = serviceType,
+            ipAddress = "address",
+            port = -1
+        )
+    )
+    trySend(displays.toList())
+}
+
+@OptIn(ExperimentalForeignApi::class)
+fun ProducerScope<List<Display>>.lostResolve(
+    oldResult: nw_browse_result_t,
+    displays: MutableList<Display>
+) {
+    val serviceName =
+        nw_endpoint_get_bonjour_service_name(nw_browse_result_copy_endpoint(oldResult))?.toKString()
+    serviceName?.let { name ->
+        displays.removeAll { it.deviceName == name }
+        trySend(displays.toList())
     }
 }

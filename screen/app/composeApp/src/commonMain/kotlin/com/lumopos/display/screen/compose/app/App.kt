@@ -16,6 +16,10 @@ import com.lumopos.display.screen.compose.viewModel.setupScreenViewModel
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
+import lumodisplay.screen.app.composeapp.generated.resources.Res
+import lumodisplay.screen.app.composeapp.generated.resources.app_author
+import lumodisplay.screen.app.composeapp.generated.resources.app_name
+import org.jetbrains.compose.resources.stringResource
 
 @Serializable
 internal data object DisplayNavKey: NavKey {
@@ -45,8 +49,8 @@ expect fun rememberDisplayAdvertiser(
 @Composable
 fun App() {
     val displayAdvertiser = rememberDisplayAdvertiser(
-        appName = "LUMO Display",
-        appAuthor = "LUMO trade service s.r.o.",
+        appName = stringResource(Res.string.app_name),
+        appAuthor = stringResource(Res.string.app_author),
         serviceType = "_display._tcp."
     )
 

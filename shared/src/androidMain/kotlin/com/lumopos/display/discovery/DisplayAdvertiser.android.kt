@@ -34,6 +34,9 @@ actual class DisplayAdvertiser(
             this.serviceName = display.serviceName
             this.port = display.port!!
             setAttribute(DisplayAdvertiserConstants.APP_NAME, display.appName)
+            setAttribute(DisplayAdvertiserConstants.APP_AUTHOR, display.appAuthor)
+            setAttribute(DisplayAdvertiserConstants.APP_VERSION, display.version)
+            setAttribute(DisplayAdvertiserConstants.ID, display.id.toString())
         }
 
         registrationListener = object : NsdManager.RegistrationListener {

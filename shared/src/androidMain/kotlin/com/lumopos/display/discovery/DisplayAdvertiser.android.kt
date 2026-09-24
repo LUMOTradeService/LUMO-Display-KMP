@@ -20,7 +20,7 @@ actual class DisplayAdvertiser(
     private var registrationListener: NsdManager.RegistrationListener? = null
 
     actual var display: Display = Display(
-        deviceName = getDeviceName(context),
+        serviceName = getDeviceName(context),
         appName = appName,
         appAuthor = appAuthor,
         version = currentAppVersion(context),
@@ -31,8 +31,8 @@ actual class DisplayAdvertiser(
     actual suspend fun advertise() {
         val serviceInfo = NsdServiceInfo().apply {
             this.serviceType = display.serviceType
-            this.serviceName = display.deviceName
-            this.port = display.port
+            this.serviceName = display.serviceName
+            this.port = display.port!!
             setAttribute(DisplayAdvertiserConstants.APP_NAME, display.appName)
         }
 

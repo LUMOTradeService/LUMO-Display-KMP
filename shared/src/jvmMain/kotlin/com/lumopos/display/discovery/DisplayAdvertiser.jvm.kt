@@ -11,7 +11,7 @@ actual class DisplayAdvertiser(
     serviceType: String,
 ) {
     actual var display: Display = Display(
-        deviceName = getDeviceName(),
+        serviceName = getDeviceName(),
         appName = appName,
         appAuthor = appAuthor,
         version = currentAppVersion(),

@@ -17,6 +17,7 @@ import androidx.compose.material3.adaptive.navigation3.ListDetailSceneStrategy
 import androidx.compose.material3.adaptive.navigation3.rememberListDetailSceneStrategy
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -37,7 +38,9 @@ import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import lumodisplay.controller.compose.generated.resources.Res
 import lumodisplay.controller.compose.generated.resources.monitor
-import lumodisplay.controller.compose.generated.resources.supporting_displays_list_item
+import lumodisplay.controller.compose.generated.resources.text_list_item_overline_displays
+import lumodisplay.controller.compose.generated.resources.text_list_item_supporting_displays
+import lumodisplay.controller.compose.generated.resources.title_list_displays_available
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -88,20 +91,34 @@ private fun DisplaysListPane(
                 ),
                 verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)
             ) {
-                item(
-                    key = "test-display"
-                ) {
-                    Button(
-                        onClick = {
-                            backStack.add(DisplaysNavKey.Detail(Display(
-                                appName = "Hello display",
-                                appAuthor = "LUMO trade service",
-                                version = "1.0.0",
-                                serviceType = "_display._tcp."
-                            )))
-                        }
+//                item(
+//                    key = "test-display"
+//                ) {
+//                    Button(
+//                        onClick = {
+//                            backStack.add(DisplaysNavKey.Detail(Display(
+//                                appName = "Hello display",
+//                                appAuthor = "LUMO trade service",
+//                                version = "1.0.0",
+//                                serviceType = "_display._tcp."
+//                            )))
+//                        }
+//                    ) {
+//                        Text("Hello display")
+//                    }
+//                }
+                if (availableDisplays.isNotEmpty()) {
+                    item(
+                        key = "title-available"
                     ) {
-                        Text("Hello display")
+                        Text(
+                            text = stringResource(
+                                Res.string.title_list_displays_available
+                            ),
+                            modifier = Modifier.padding(
+                                horizontal = 16.dp
+                            )
+                        )
                     }
                 }
                 items(
@@ -120,23 +137,32 @@ private fun DisplaysListPane(
                             colors = ListItemDefaults.segmentedColors(
                                 containerColor = MaterialTheme.colorScheme.surfaceContainerLowest
                             ),
+                            verticalAlignment = Alignment.CenterVertically,
                             leadingContent = {
                                 Icon(
                                     painter = painterResource(Res.drawable.monitor),
                                     contentDescription = null
                                 )
                             },
+                            overlineContent = {
+                                Text(
+                                    text = stringResource(
+                                        Res.string.text_list_item_overline_displays,
+                                        display.appAuthor
+                                    )
+                                )
+                            },
                             content = {
                                 Text(
-                                    text = display.deviceName
+                                    text = display.serviceName
                                 )
                             },
                             supportingContent = {
                                 Text(
                                     text = stringResource(
-                                        Res.string.supporting_displays_list_item,
-                                        display.ipAddress,
-                                        display.port
+                                        Res.string.text_list_item_supporting_displays,
+                                        display.appName,
+                                        display.version
                                     )
                                 )
                             }
@@ -204,6 +230,7 @@ fun DisplaysScreen(
                 DisplaysListPane(
                     backStack = backStack,
                     navigationIcon = navigationIcon,
+                    title = title,
                     availableDisplays = discoveredDisplays
                 )
             }
@@ -221,48 +248,53 @@ fun DisplaysScreen(
 )
 @Composable
 fun DisplaysListPreview() {
-    DisplaysScreen(
-        state = DisplaysScreenState(
-            MutableStateFlow(
-                listOf(
-                    Display(
-                        deviceName = "Device name",
-                        appName = "LUMO Display",
-                        appAuthor = "LUMO trade service",
-                        version = "1.0.0",
-                        serviceType = "Display",
-                        ipAddress = "192.168.0.10",
-                        port = 8080
-                    ),
-                    Display(
-                        deviceName = "Device name",
-                        appName = "LUMO Display",
-                        appAuthor = "LUMO trade service",
-                        version = "1.0.0",
-                        serviceType = "Display",
-                        ipAddress = "192.168.0.10",
-                        port = 8080
-                    ),
-                    Display(
-                        deviceName = "Device name",
-                        appName = "LUMO Display",
-                        appAuthor = "LUMO trade service",
-                        version = "1.0.0",
-                        serviceType = "Display",
-                        ipAddress = "192.168.0.10",
-                        port = 8080
-                    ),
-                    Display(
-                        deviceName = "Device name",
-                        appName = "LUMO Display",
-                        appAuthor = "LUMO trade service",
-                        version = "1.0.0",
-                        serviceType = "Display",
-                        ipAddress = "192.168.0.10",
-                        port = 8080
+    MaterialTheme {
+        DisplaysScreen(
+            title = {
+                Text("Screens")
+            },
+            state = DisplaysScreenState(
+                MutableStateFlow(
+                    listOf(
+                        Display(
+                            serviceName = "Device name",
+                            appName = "LUMO Display",
+                            appAuthor = "LUMO trade service s.r.o.",
+                            version = "1.0.0",
+                            serviceType = "Display",
+                            ipAddress = "192.168.0.10",
+                            port = 8080
+                        ),
+                        Display(
+                            serviceName = "Phone 16",
+                            appName = "LUMO Display",
+                            appAuthor = "LUMO trade service s.r.o.",
+                            version = "1.0.0",
+                            serviceType = "Display",
+                            ipAddress = "192.168.0.10",
+                            port = 8080
+                        ),
+                        Display(
+                            serviceName = "My Device",
+                            appName = "LUMO Display",
+                            appAuthor = "LUMO trade service s.r.o.",
+                            version = "1.0.0",
+                            serviceType = "Display",
+                            ipAddress = "192.168.0.10",
+                            port = 8080
+                        ),
+                        Display(
+                            serviceName = "Device",
+                            appName = "LUMO Display",
+                            appAuthor = "LUMO trade service s.r.o.",
+                            version = "1.0.1",
+                            serviceType = "Display",
+                            ipAddress = "192.168.0.10",
+                            port = 8080
+                        )
                     )
                 )
             )
         )
-    )
+    }
 }

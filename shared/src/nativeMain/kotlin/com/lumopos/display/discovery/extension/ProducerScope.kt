@@ -42,13 +42,11 @@ fun ProducerScope<List<Display>>.foundResolve(
 
     displays.add(
         Display(
-            deviceName = serviceName,
+            serviceName = serviceName,
             appName = newResult.appName,
             appAuthor = newResult.appAuthor,
             version = newResult.version,
-            serviceType = serviceType,
-            ipAddress = "address",
-            port = -1
+            serviceType = serviceType
         )
     )
     trySend(displays.toList())
@@ -62,7 +60,7 @@ fun ProducerScope<List<Display>>.lostResolve(
     val serviceName =
         nw_endpoint_get_bonjour_service_name(nw_browse_result_copy_endpoint(oldResult))?.toKString()
     serviceName?.let { name ->
-        displays.removeAll { it.deviceName == name }
+        displays.removeAll { it.serviceName == name }
         trySend(displays.toList())
     }
 }

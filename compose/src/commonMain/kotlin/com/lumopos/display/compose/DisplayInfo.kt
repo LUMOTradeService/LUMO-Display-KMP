@@ -124,7 +124,7 @@ fun LazyListScope.aboutDisplayItems(
     ) {
         AboutDisplayItem(
             headline = stringResource(Res.string.title_device_name),
-            supporting = display.deviceName
+            supporting = display.serviceName
         )
     }
     item(
@@ -132,7 +132,7 @@ fun LazyListScope.aboutDisplayItems(
     ) {
         AboutDisplayItem(
             headline = stringResource(Res.string.title_ip_address),
-            supporting = display.ipAddress
+            supporting = display.ipAddress ?: "unknown"
         )
     }
     item(

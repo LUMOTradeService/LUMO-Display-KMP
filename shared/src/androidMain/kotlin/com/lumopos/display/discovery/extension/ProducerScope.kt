@@ -32,13 +32,13 @@ private fun ProducerScope<List<Display>>.foundDisplay(
         discoveredDisplays.add(
             Display(
                 id = displayId,
-                deviceName = service.serviceName,
-                ipAddress = service.ipAddress,
-                port = service.port,
                 appName = service.appName,
                 appAuthor = service.appAuthor,
                 version = service.appVersion,
-                serviceType = service.serviceType
+                serviceName = service.serviceName,
+                serviceType = service.serviceType,
+                ipAddress = service.ipAddress,
+                port = service.port
             )
         )
         trySend(
@@ -63,7 +63,7 @@ private fun ProducerScope<List<Display>>.lostDisplay(
     val lock = Any()
 
     synchronized(lock) {
-        discoveredDisplays.removeAll { it.deviceName == service.serviceName }
+        discoveredDisplays.removeAll { it.serviceName == service.serviceName }
         trySend(discoveredDisplays.toList())
     }
 }

@@ -34,10 +34,12 @@ internal actual fun getLocalIpAddress(): String {
     try {
         val networkInterfaces = NetworkInterface.getNetworkInterfaces()
         for (networkInterface in networkInterfaces) {
-            val addresses = networkInterface.inetAddresses
-            for (address in addresses) {
-                if (!address.isLoopbackAddress && address is Inet4Address) {
-                    foundAddress = address.hostAddress
+            if (networkInterface.name.lowercase().contains("wlan")) {
+                val addresses = networkInterface.inetAddresses
+                for (address in addresses) {
+                    if (!address.isLoopbackAddress && !address.isLinkLocalAddress && address is Inet4Address) {
+                        foundAddress = address.hostAddress
+                    }
                 }
             }
         }

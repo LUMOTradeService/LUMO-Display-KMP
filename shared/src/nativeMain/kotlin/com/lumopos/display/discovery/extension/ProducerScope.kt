@@ -11,7 +11,10 @@ import kotlinx.coroutines.channels.ProducerScope
 import platform.Network.nw_browse_result_copy_endpoint
 import platform.Network.nw_browse_result_copy_txt_record_object
 import platform.Network.nw_browse_result_t
+import platform.Network.nw_endpoint_get_bonjour_service_domain
 import platform.Network.nw_endpoint_get_bonjour_service_name
+import platform.Network.nw_endpoint_get_hostname
+import platform.Network.nw_endpoint_get_port
 import platform.Network.nw_txt_record_access_key
 import platform.Network.nw_txt_record_find_key_non_empty_value
 
@@ -39,7 +42,6 @@ fun ProducerScope<List<Display>>.foundResolve(
 ) {
     val endpoint = nw_browse_result_copy_endpoint(newResult)
     val serviceName = nw_endpoint_get_bonjour_service_name(endpoint)?.toKString() ?: "unknown"
-
     displays.add(
         Display(
             serviceName = serviceName,

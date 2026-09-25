@@ -18,6 +18,7 @@ import lumodisplay.compose.generated.resources.app_name
 import lumodisplay.compose.generated.resources.docs
 import lumodisplay.compose.generated.resources.quick_reference
 import lumodisplay.compose.generated.resources.text_manual
+import lumodisplay.compose.generated.resources.text_ip_address_port
 import lumodisplay.compose.generated.resources.text_terms_and_services
 import lumodisplay.compose.generated.resources.title_about_device_and_app
 import lumodisplay.compose.generated.resources.title_app_name
@@ -132,7 +133,7 @@ fun LazyListScope.aboutDisplayItems(
     ) {
         AboutDisplayItem(
             headline = stringResource(Res.string.title_ip_address),
-            supporting = display.ipAddress ?: "unknown"
+            supporting = stringResource(Res.string.text_ip_address_port, display.ipAddress ?: "unknown", display.port ?: "unknown")
         )
     }
     item(

@@ -10,6 +10,7 @@
     <string name="title_version">Version</string>
     <string name="title_author">Author</string>
     <string name="title_pair_dialog">Waiting for "%1$s" to accept pairing</string>
+    <string name="text_ip_address_port">%1$s:%2$s</string>
     <string name="text_pair_dialog">Make sure code shown on "%1$s" matches the one below.</string>
     <string name="text_terms_and_services">Read terms and services for Mobile devices</string>
     <string name="text_manual">Read manual for %1$s</string>

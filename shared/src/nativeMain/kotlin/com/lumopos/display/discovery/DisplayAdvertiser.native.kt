@@ -11,6 +11,7 @@ import platform.Network.NW_PARAMETERS_DEFAULT_CONFIGURATION
 import platform.Network.NW_PARAMETERS_DISABLE_PROTOCOL
 import platform.Network.nw_advertise_descriptor_create_bonjour_service
 import platform.Network.nw_advertise_descriptor_set_txt_record_object
+import platform.Network.nw_connection_cancel
 import platform.Network.nw_listener_cancel
 import platform.Network.nw_listener_create_with_port
 import platform.Network.nw_listener_set_advertise_descriptor
@@ -72,7 +73,8 @@ actual class DisplayAdvertiser(
         nw_listener_set_queue(listener, dispatch_get_main_queue())
         nw_listener_set_new_connection_handler(listener) { connection ->
             if(connection != null) {
-                println("Bonjour: New connection")
+                println("Bonjour: New connection received")
+                nw_connection_cancel(connection)
             }
         }
         nw_listener_set_state_changed_handler(listener) { state, error ->

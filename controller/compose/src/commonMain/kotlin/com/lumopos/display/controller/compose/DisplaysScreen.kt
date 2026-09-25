@@ -1,0 +1,299 @@
+package com.lumopos.display.controller.compose
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedListItem
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.adaptive.navigation3.ListDetailSceneStrategy
+import androidx.compose.material3.adaptive.navigation3.rememberListDetailSceneStrategy
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
+import androidx.navigation3.runtime.NavBackStack
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import androidx.navigation3.ui.NavDisplay
+import androidx.savedstate.serialization.SavedStateConfiguration
+import com.lumopos.display.controller.compose.state.DisplaysScreenState
+import com.lumopos.display.data.model.Display
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
+import lumodisplay.controller.compose.generated.resources.Res
+import lumodisplay.controller.compose.generated.resources.monitor
+import lumodisplay.controller.compose.generated.resources.text_list_item_overline_displays
+import lumodisplay.controller.compose.generated.resources.text_list_item_supporting_displays
+import lumodisplay.controller.compose.generated.resources.title_list_displays_available
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+
+
+@Serializable
+private data object DisplaysNavKey: NavKey {
+    @Serializable
+    data object List: NavKey
+
+    @Serializable
+    data class Detail(
+        val display: Display
+    ): NavKey
+}
+
+private val DisplaysSavedStateConfiguration = SavedStateConfiguration {
+    serializersModule = SerializersModule {
+        polymorphic(NavKey::class) {
+            subclass(DisplaysNavKey.List::class, DisplaysNavKey.List.serializer())
+            subclass(DisplaysNavKey.Detail::class, DisplaysNavKey.Detail.serializer())
+        }
+    }
+}
+
+@Composable
+private fun DisplaysListPane(
+    backStack: NavBackStack<NavKey>,
+    title: @Composable () -> Unit = {},
+    availableDisplays: List<Display>,
+    navigationIcon: @Composable () -> Unit = {}
+) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                navigationIcon = navigationIcon,
+                title = title
+            )
+        }
+    ) { paddingValues ->
+        Surface(
+            modifier = Modifier.padding(paddingValues)
+        ) {
+            LazyColumn(
+                contentPadding = PaddingValues(
+                    top = 16.dp,
+                    start = 8.dp,
+                    end = 8.dp
+                ),
+                verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)
+            ) {
+//                item(
+//                    key = "test-display"
+//                ) {
+//                    Button(
+//                        onClick = {
+//                            backStack.add(DisplaysNavKey.Detail(Display(
+//                                appName = "Hello display",
+//                                appAuthor = "LUMO trade service",
+//                                version = "1.0.0",
+//                                serviceType = "_display._tcp."
+//                            )))
+//                        }
+//                    ) {
+//                        Text("Hello display")
+//                    }
+//                }
+                if (availableDisplays.isNotEmpty()) {
+                    item(
+                        key = "title-available"
+                    ) {
+                        Text(
+                            text = stringResource(
+                                Res.string.title_list_displays_available
+                            ),
+                            modifier = Modifier.padding(
+                                horizontal = 16.dp
+                            )
+                        )
+                    }
+                }
+                items(
+                    count = availableDisplays.size,
+                    key = { index ->
+                        availableDisplays[index].id.toString()
+                    }
+                ) { index ->
+                    availableDisplays[index].let { display ->
+                        SegmentedListItem(
+                            onClick = {},
+                            shapes = ListItemDefaults.segmentedShapes(
+                                index = index,
+                                count = availableDisplays.size
+                            ),
+                            colors = ListItemDefaults.segmentedColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainerLowest
+                            ),
+                            verticalAlignment = Alignment.CenterVertically,
+                            leadingContent = {
+                                Icon(
+                                    painter = painterResource(Res.drawable.monitor),
+                                    contentDescription = null
+                                )
+                            },
+                            overlineContent = {
+                                Text(
+                                    text = stringResource(
+                                        Res.string.text_list_item_overline_displays,
+                                        display.appAuthor
+                                    )
+                                )
+                            },
+                            content = {
+                                Text(
+                                    text = display.serviceName
+                                )
+                            },
+                            supportingContent = {
+                                Text(
+                                    text = stringResource(
+                                        Res.string.text_list_item_supporting_displays,
+                                        display.appName,
+                                        display.version
+                                    )
+                                )
+                            }
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun DisplaysDetailPane() {
+    Scaffold { paddingValues ->
+        Surface(
+            modifier = Modifier.padding(paddingValues)
+        ) {
+            Text(
+                text = "Display detail"
+            )
+        }
+    }
+}
+
+@Composable
+fun DisplaysDetailPanePlaceholder() {
+    Scaffold { paddingValues ->
+        Surface(
+            modifier = Modifier.padding(paddingValues)
+        ) {
+            Text(
+                text = "Placeholder"
+            )
+        }
+    }
+}
+
+@Composable
+fun DisplaysScreen(
+    navigationIcon: @Composable () -> Unit = {},
+    title: @Composable () -> Unit = {},
+    state: DisplaysScreenState
+) {
+    val listDetailSceneStrategy = rememberListDetailSceneStrategy<NavKey>()
+    val discoveredDisplays by state.discoveredDisplays.collectAsStateWithLifecycle()
+    val backStack = rememberNavBackStack(DisplaysSavedStateConfiguration, DisplaysNavKey.List)
+
+    NavDisplay(
+        backStack = backStack,
+        sceneStrategies = listOf(
+            listDetailSceneStrategy
+        ),
+        entryDecorators = listOf(
+            rememberSaveableStateHolderNavEntryDecorator(),
+            rememberViewModelStoreNavEntryDecorator()
+        ),
+        entryProvider = entryProvider {
+            entry<DisplaysNavKey.List>(
+                metadata = ListDetailSceneStrategy.listPane(
+                    detailPlaceholder = {
+                        DisplaysDetailPanePlaceholder()
+                    }
+                )
+            ) {
+                DisplaysListPane(
+                    backStack = backStack,
+                    navigationIcon = navigationIcon,
+                    title = title,
+                    availableDisplays = discoveredDisplays
+                )
+            }
+            entry<DisplaysNavKey.Detail>(
+                metadata = ListDetailSceneStrategy.detailPane()
+            ) { /* detail -> */
+                DisplaysDetailPane()
+            }
+        }
+    )
+}
+
+@Preview(
+    showBackground = true
+)
+@Composable
+fun DisplaysListPreview() {
+    MaterialTheme {
+        DisplaysScreen(
+            title = {
+                Text("Screens")
+            },
+            state = DisplaysScreenState(
+                MutableStateFlow(
+                    listOf(
+                        Display(
+                            serviceName = "Device name",
+                            appName = "LUMO Display",
+                            appAuthor = "LUMO trade service s.r.o.",
+                            version = "1.0.0",
+                            serviceType = "Display",
+                            ipAddress = "192.168.0.10",
+                            port = 8080
+                        ),
+                        Display(
+                            serviceName = "Phone 16",
+                            appName = "LUMO Display",
+                            appAuthor = "LUMO trade service s.r.o.",
+                            version = "1.0.0",
+                            serviceType = "Display",
+                            ipAddress = "192.168.0.10",
+                            port = 8080
+                        ),
+                        Display(
+                            serviceName = "My Device",
+                            appName = "LUMO Display",
+                            appAuthor = "LUMO trade service s.r.o.",
+                            version = "1.0.0",
+                            serviceType = "Display",
+                            ipAddress = "192.168.0.10",
+                            port = 8080
+                        ),
+                        Display(
+                            serviceName = "Device",
+                            appName = "LUMO Display",
+                            appAuthor = "LUMO trade service s.r.o.",
+                            version = "1.0.1",
+                            serviceType = "Display",
+                            ipAddress = "192.168.0.10",
+                            port = 8080
+                        )
+                    )
+                )
+            )
+        )
+    }
+}

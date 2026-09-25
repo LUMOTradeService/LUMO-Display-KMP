@@ -3,11 +3,8 @@ package com.lumopos.display.discovery
 import com.lumopos.display.data.model.Display
 import com.lumopos.display.data.model.currentAppVersion
 import kotlinx.cinterop.ExperimentalForeignApi
-import kotlinx.cinterop.UByteVar
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.convert
-import kotlinx.cinterop.cstr
-import kotlinx.cinterop.objcPtr
 import kotlinx.cinterop.reinterpret
 import kotlinx.cinterop.usePinned
 import platform.Network.NW_PARAMETERS_DEFAULT_CONFIGURATION
@@ -90,6 +87,7 @@ actual class DisplayAdvertiser(
 
     actual fun stopAdvertising() {
         listener?.let {
+            nw_listener_set_advertise_descriptor(it, null)
             nw_listener_cancel(it)
             listener = null
         }

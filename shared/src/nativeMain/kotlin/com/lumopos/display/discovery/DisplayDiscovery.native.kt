@@ -21,7 +21,6 @@ import platform.Network.nw_browser_state_cancelled
 import platform.Network.nw_browser_state_failed
 import platform.Network.nw_browser_t
 import platform.Network.nw_parameters_create
-import platform.Network.nw_parameters_create_secure_tcp
 import platform.darwin.dispatch_queue_create
 
 @OptIn(ExperimentalForeignApi::class)

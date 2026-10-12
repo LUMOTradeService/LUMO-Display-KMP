@@ -107,7 +107,7 @@ private fun ProducerScope<List<Display>>.resolveLegacy(
  * @param service The discovered service that needs to be resolved.
  * @param discoveredScreens The mutable list of currently known customer displays to be updated.
  */
-internal fun ProducerScope<List<Display>>.foundResolve(
+internal fun ProducerScope<List<Display>>.resolveFoundService(
     nsdManager: NsdManager,
     service: NsdServiceInfo,
     discoveredScreens: MutableList<Display>
@@ -150,7 +150,7 @@ internal fun ProducerScope<List<Display>>.foundResolve(
  * @param service The [NsdServiceInfo] representing the service that has been lost.
  * @param discoveredScreens The mutable list of currently discovered customer displays.
  */
-internal fun ProducerScope<List<Display>>.lostResolve(
+internal fun ProducerScope<List<Display>>.resolveLostService(
     service: NsdServiceInfo,
     discoveredScreens: MutableList<Display>
 ) {
@@ -168,7 +168,7 @@ internal fun ProducerScope<List<Display>>.lostResolve(
  *
  * @param discoveredScreens The mutable list of currently discovered customer displays.
  */
-internal fun ProducerScope<List<Display>>.startedResolve(
+internal fun ProducerScope<List<Display>>.clearDiscoveredScreens(
     discoveredScreens: MutableList<Display>
 ) {
     synchronized(discoveredScreens) {

@@ -4,9 +4,9 @@ import android.content.Context
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
 import com.lumopos.display.data.model.Display
-import com.lumopos.display.controller.extension.foundResolve
-import com.lumopos.display.controller.extension.lostResolve
-import com.lumopos.display.controller.extension.startedResolve
+import com.lumopos.display.controller.extension.resolveFoundService
+import com.lumopos.display.controller.extension.resolveLostService
+import com.lumopos.display.controller.extension.clearDiscoveredScreens
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -27,16 +27,16 @@ actual class ScreenDiscovery(
         val discoveryListener = object : NsdManager.DiscoveryListener {
             override fun onServiceFound(service: NsdServiceInfo) {
                 val displays = discoveredScreens.getOrPut(serviceType) { mutableListOf() }
-                foundResolve(nsdManager, service, displays)
+                resolveFoundService(nsdManager, service, displays)
             }
             override fun onServiceLost(service: NsdServiceInfo) {
                 discoveredScreens[serviceType]?.let {
-                    lostResolve(service, it)
+                    resolveLostService(service, it)
                 }
             }
             override fun onDiscoveryStarted(serviceType: String) {
                 discoveredScreens[serviceType]?.let {
-                    startedResolve(it)
+                    clearDiscoveredScreens(it)
                 }
             }
             override fun onDiscoveryStopped(serviceType: String) {}

@@ -20,6 +20,13 @@ expect class ScreenDiscovery {
      * a display is discovered or lost.
      */
     fun discover(serviceType: String): Flow<List<Screen>>
+
+    /**
+     * Starts the service discovery process to find available customer displays on the local network.
+     *
+     * @param serviceType The type of service to discover.
+     */
+    fun startDiscovering(serviceType: String)
     /**
      * Pauses the active service discovery process.
      *
@@ -27,11 +34,6 @@ expect class ScreenDiscovery {
      * resources but suspends the emission of updates until resumed or restarted.
      */
     fun pauseDiscovering(serviceType: String)
-    /**
-     * Restarts the service discovery process by stopping any ongoing discovery
-     * and initiating a fresh scan for available customer displays on the local network.
-     */
-    fun restartDiscovering(serviceType: String)
     /**
      * Stops the active discovery of Customer Display services.
      *

@@ -50,24 +50,14 @@ actual class ScreenDiscovery(
 
         discoveryListeners[serviceType] = discoveryListener
 
-        nsdManager.discoverServices(
-            serviceType,
-            NsdManager.PROTOCOL_DNS_SD,
-            discoveryListener
-        )
+        startDiscovering(serviceType)
 
         awaitClose {
             stopDiscovering(serviceType)
         }
     }.flowOn(Dispatchers.IO)
 
-    actual fun pauseDiscovering(serviceType: String) {
-        discoveryListeners[serviceType]?.let {
-            nsdManager.stopServiceDiscovery(it)
-        }
-    }
-
-    actual fun restartDiscovering(serviceType: String) {
+    actual fun startDiscovering(serviceType: String) {
         discoveryListeners[serviceType]?.let { discoveryListener ->
             try {
                 nsdManager.discoverServices(
@@ -78,6 +68,12 @@ actual class ScreenDiscovery(
             } catch (e: Exception) {
                 e.printStackTrace()
             }
+        }
+    }
+
+    actual fun pauseDiscovering(serviceType: String) {
+        discoveryListeners[serviceType]?.let {
+            nsdManager.stopServiceDiscovery(it)
         }
     }
 

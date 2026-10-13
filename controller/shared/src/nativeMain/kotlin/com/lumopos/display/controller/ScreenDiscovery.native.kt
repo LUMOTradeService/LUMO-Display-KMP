@@ -31,7 +31,7 @@ import platform.darwin.dispatch_queue_create
 @Suppress(names = ["EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING"])
 actual class ScreenDiscovery {
     private val discoveredScreens: MutableMap<String, MutableList<Screen>> = mutableMapOf()
-    private val activeBrowsers: MutableMap<String, nw_browser_t> = mutableMapOf()
+    private val browsers: MutableMap<String, nw_browser_t> = mutableMapOf()
     private val restartActions: MutableMap<String, () -> Unit> = mutableMapOf()
 
     private fun createBrowser(serviceType: String): nw_browser_t {
@@ -80,8 +80,8 @@ actual class ScreenDiscovery {
                 }
             }
 
-            nw_browser_start(browser)
-            activeBrowsers.getOrPut(serviceType) { browser }
+            browsers.getOrPut(serviceType) { browser }
+            startDiscovering(serviceType)
         }
 
         restartActions[serviceType] = ::browsing
@@ -92,18 +92,17 @@ actual class ScreenDiscovery {
         }
     }.flowOn(Dispatchers.IO)
 
-    actual fun pauseDiscovering(serviceType: String) {
-        activeBrowsers.remove(serviceType)?.let { nw_browser_cancel(it) }
+    actual fun startDiscovering(serviceType: String) {
+        browsers[serviceType]?.let {
+            nw_browser_start(it)
+        }
     }
 
-    actual fun restartDiscovering(serviceType: String) {
-        if (activeBrowsers.containsKey(serviceType)) return
-        restartActions[serviceType]?.invoke()
+    actual fun pauseDiscovering(serviceType: String) {
+        browsers[serviceType]?.let { nw_browser_cancel(it) }
     }
 
     actual fun stopDiscovering(serviceType: String) {
-        activeBrowsers.remove(serviceType)?.let { nw_browser_cancel(it) }
-        restartActions.remove(serviceType)
-        discoveredScreens.remove(serviceType)
+        browsers.remove(serviceType)?.let { nw_browser_cancel(it) }
     }
 }

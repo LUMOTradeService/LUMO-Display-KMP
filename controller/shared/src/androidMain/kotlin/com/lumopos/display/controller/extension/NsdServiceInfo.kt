@@ -3,7 +3,7 @@ package com.lumopos.display.controller.extension
 import android.net.nsd.NsdServiceInfo
 import android.os.Build
 import android.os.ext.SdkExtensions
-import com.lumopos.display.discovery.DisplayAdvertiserConstants
+import com.lumopos.display.discovery.ScreenServiceConstants
 import kotlin.uuid.Uuid
 
 /**
@@ -12,7 +12,7 @@ import kotlin.uuid.Uuid
  * @return The parsed [Uuid] if the attribute exists and is valid, or `null` otherwise.
  */
 internal val NsdServiceInfo.id: Uuid?
-    get() = this.attributes[DisplayAdvertiserConstants.ID]?.let {
+    get() = this.attributes[ScreenServiceConstants.ID]?.let {
         Uuid.parse(it.decodeToString())
     }
 
@@ -22,7 +22,7 @@ internal val NsdServiceInfo.id: Uuid?
  * @return The version string if found and decodable, otherwise returns "unknown".
  */
 internal val NsdServiceInfo.appVersion: String
-    get() = this.attributes[DisplayAdvertiserConstants.APP_VERSION]?.decodeToString() ?: "unknown"
+    get() = this.attributes[ScreenServiceConstants.APP_VERSION]?.decodeToString() ?: "unknown"
 
 /**
  * Retrieves the IP address from the [NsdServiceInfo].
@@ -42,9 +42,9 @@ internal val NsdServiceInfo.ipAddress: String
     }
 
 internal val NsdServiceInfo.appName: String
-    get() = this.attributes[DisplayAdvertiserConstants.APP_NAME]?.decodeToString()
+    get() = this.attributes[ScreenServiceConstants.APP_NAME]?.decodeToString()
         ?: "unknown"
 
 internal val NsdServiceInfo.appAuthor: String
-    get() = this.attributes[DisplayAdvertiserConstants.APP_AUTHOR]?.decodeToString()
+    get() = this.attributes[ScreenServiceConstants.APP_AUTHOR]?.decodeToString()
         ?: "unknown"

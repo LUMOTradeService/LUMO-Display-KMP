@@ -56,9 +56,9 @@ actual class DisplayAdvertiser(
         val descriptor = nw_advertise_descriptor_create_bonjour_service(serviceName, serviceType, null)
         val txtRecord = nw_txt_record_create_dictionary()
         mapOf(
-            DisplayAdvertiserConstants.APP_VERSION to display.version,
-            DisplayAdvertiserConstants.APP_NAME to display.appName,
-            DisplayAdvertiserConstants.APP_AUTHOR to display.appAuthor,
+            ScreenServiceConstants.APP_VERSION to display.version,
+            ScreenServiceConstants.APP_NAME to display.appName,
+            ScreenServiceConstants.APP_AUTHOR to display.appAuthor,
         ).forEach { (key, value) ->
             val bytes = value.encodeToByteArray()
             if (bytes.isNotEmpty()) {

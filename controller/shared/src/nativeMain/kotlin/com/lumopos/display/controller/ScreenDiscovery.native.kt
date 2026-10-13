@@ -49,43 +49,39 @@ actual class ScreenDiscovery {
     }
 
     actual fun discover(serviceType: String): Flow<List<Screen>> = callbackFlow {
-        fun browsing() {
-            val browser = createBrowser(serviceType)
+        val browser = createBrowser(serviceType)
 
-            nw_browser_set_browse_results_changed_handler(browser) { oldResult, newResult, _ ->
-                when {
-                    newResult != null -> {
-                        val screens = discoveredScreens.getOrPut(serviceType) { mutableListOf() }
-                        resolveFoundService(newResult, screens, serviceType)
-                    }
+        nw_browser_set_browse_results_changed_handler(browser) { oldResult, newResult, _ ->
+            when {
+                newResult != null -> {
+                    val screens = discoveredScreens.getOrPut(serviceType) { mutableListOf() }
+                    resolveFoundService(newResult, screens, serviceType)
+                }
 
-                    oldResult != null -> {
-                        discoveredScreens[serviceType]?.let {
-                            resolveLostService(oldResult, it)
-                        }
+                oldResult != null -> {
+                    discoveredScreens[serviceType]?.let {
+                        resolveLostService(oldResult, it)
                     }
                 }
             }
-
-            nw_browser_set_state_changed_handler(browser) { state, error ->
-                when (state) {
-                    nw_browser_state_ready -> {
-                        discoveredScreens[serviceType]?.let {
-                            clearDiscoveredScreens(it)
-                        }
-                    }
-                    nw_browser_state_cancelled -> {}
-                    nw_browser_state_failed -> close(RuntimeException("Bonjour browse failed: $error"))
-                    else -> Unit
-                }
-            }
-
-            browsers.getOrPut(serviceType) { browser }
-            startDiscovering(serviceType)
         }
 
-        restartActions[serviceType] = ::browsing
-        browsing()
+        nw_browser_set_state_changed_handler(browser) { state, error ->
+            when (state) {
+                nw_browser_state_ready -> {
+                    discoveredScreens[serviceType]?.let {
+                        clearDiscoveredScreens(it)
+                    }
+                }
+
+                nw_browser_state_cancelled -> {}
+                nw_browser_state_failed -> close(RuntimeException("Bonjour browse failed: $error"))
+                else -> Unit
+            }
+        }
+
+        browsers.getOrPut(serviceType) { browser }
+        startDiscovering(serviceType)
 
         awaitClose {
             stopDiscovering(serviceType)
@@ -104,5 +100,14 @@ actual class ScreenDiscovery {
 
     actual fun stopDiscovering(serviceType: String) {
         browsers.remove(serviceType)?.let { nw_browser_cancel(it) }
+    }
+
+    actual interface ScreenDiscoveryListener {
+        actual fun onServiceFound(screen: Screen)
+        actual fun onServiceLost(screen: Screen)
+        actual fun onDiscoveryStarted()
+        actual fun onDiscoveryStopped()
+        actual fun onStartDiscoveryFailed(errorCode: Int)
+        actual fun onStopDiscoveryFailed(errorCode: Int)
     }
 }

@@ -13,6 +13,15 @@ import kotlinx.coroutines.flow.Flow
  */
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 expect class ScreenDiscovery {
+    interface ScreenDiscoveryListener {
+        fun onServiceFound(screen: Screen)
+        fun onServiceLost(screen: Screen)
+        fun onDiscoveryStarted()
+        fun onDiscoveryStopped()
+        fun onStartDiscoveryFailed(errorCode: Int)
+        fun onStopDiscoveryFailed(errorCode: Int)
+    }
+
     /**
      * Starts the service discovery process to find available customer displays on the local network.
      *

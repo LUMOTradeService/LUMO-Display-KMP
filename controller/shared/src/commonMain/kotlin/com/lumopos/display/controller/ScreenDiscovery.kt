@@ -28,7 +28,7 @@ expect class ScreenDiscovery {
      * @return A [Flow] that emits an updated list of [Screen] objects whenever
      * a display is discovered or lost.
      */
-    fun discover(serviceType: String): Flow<List<Screen>>
+    fun screens(serviceType: String): Flow<List<Screen>>
 
     /**
      * Starts the service discovery process to find available customer displays on the local network.
@@ -46,7 +46,7 @@ expect class ScreenDiscovery {
     /**
      * Stops the active discovery of Customer Display services.
      *
-     * This method halts the scanning process initiated by [discover] and releases
+     * This method halts the scanning process initiated by [screens] and releases
      * any resources associated with the discovery lifecycle.
      */
     fun stopDiscovering(serviceType: String)

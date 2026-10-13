@@ -17,8 +17,8 @@ import lumodisplay.compose.generated.resources.Res
 import lumodisplay.compose.generated.resources.app_name
 import lumodisplay.compose.generated.resources.docs
 import lumodisplay.compose.generated.resources.quick_reference
-import lumodisplay.compose.generated.resources.text_manual
 import lumodisplay.compose.generated.resources.text_ip_address_port
+import lumodisplay.compose.generated.resources.text_manual
 import lumodisplay.compose.generated.resources.text_terms_and_services
 import lumodisplay.compose.generated.resources.title_about_device_and_app
 import lumodisplay.compose.generated.resources.title_app_name

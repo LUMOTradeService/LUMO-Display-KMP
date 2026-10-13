@@ -48,7 +48,7 @@ actual class ScreenDiscovery {
         return browser
     }
 
-    actual fun discover(serviceType: String): Flow<List<Screen>> = callbackFlow {
+    actual fun screens(serviceType: String): Flow<List<Screen>> = callbackFlow {
         val browser = createBrowser(serviceType)
 
         nw_browser_set_browse_results_changed_handler(browser) { oldResult, newResult, _ ->

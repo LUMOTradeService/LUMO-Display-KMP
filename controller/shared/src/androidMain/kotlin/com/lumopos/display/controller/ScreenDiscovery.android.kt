@@ -118,7 +118,7 @@ actual class ScreenDiscovery(
         }
     }
 
-    actual fun discover(serviceType: String): Flow<List<Screen>> = callbackFlow {
+    actual fun screens(serviceType: String): Flow<List<Screen>> = callbackFlow {
         val listener = object : ScreenDiscoveryListener {
                 private fun update() {
                     discoveredScreens[serviceType]?.let {

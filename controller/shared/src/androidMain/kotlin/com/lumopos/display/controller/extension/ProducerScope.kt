@@ -24,12 +24,12 @@ private fun ProducerScope<List<Display>>.foundScreen(
     discoveredScreens: MutableList<Display>,
 ) {
     synchronized(discoveredScreens) {
-        val displayId = service.id ?: Uuid.random()
+        val screenId = service.id ?: Uuid.random()
 
-        discoveredScreens.removeAll { it.serviceName == service.serviceName || it.id == displayId }
+        discoveredScreens.removeAll { it.serviceName == service.serviceName || it.id == screenId }
         discoveredScreens.add(
             Display(
-                id = displayId,
+                id = screenId,
                 appName = service.appName,
                 appAuthor = service.appAuthor,
                 version = service.appVersion,
@@ -42,25 +42,6 @@ private fun ProducerScope<List<Display>>.foundScreen(
         trySend(
             discoveredScreens.toList()
         )
-    }
-}
-
-/**
- * Removes a screen from the collection of discovered screens.
- *
- * This function updates the state by filtering out the specified screen,
- * ensuring it is no longer advertised or available for pairing within the current scope.
- *
- * @param service The [NsdServiceInfo] representing the screen to be removed.
- * @param discoveredScreens The mutable list of currently available screens.
- */
-private fun ProducerScope<List<Display>>.lostScreen(
-    service: NsdServiceInfo,
-    discoveredScreens: MutableList<Display>
-) {
-    synchronized(discoveredScreens) {
-        discoveredScreens.removeAll { it.serviceName == service.serviceName }
-        trySend(discoveredScreens.toList())
     }
 }
 
@@ -155,10 +136,10 @@ internal fun ProducerScope<List<Display>>.resolveLostService(
     service: NsdServiceInfo,
     discoveredScreens: MutableList<Display>
 ) {
-    lostScreen(
-        service = service,
-        discoveredScreens = discoveredScreens
-    )
+    synchronized(discoveredScreens) {
+        discoveredScreens.removeAll { it.serviceName == service.serviceName }
+        trySend(discoveredScreens.toList())
+    }
 }
 
 /**

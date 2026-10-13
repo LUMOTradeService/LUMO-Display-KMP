@@ -3,24 +3,11 @@ package com.lumopos.display.discovery
 import com.lumopos.display.data.model.Display
 
 /**
- * Constants used as metadata keys or configuration values when advertising the display service
- * on the local network. These keys help identifying the application and service type
- * during the discovery process.
- */
-object DisplayAdvertiserConstants {
-    const val ID = "id"
-    const val APP_NAME = "app_name"
-    const val APP_AUTHOR = "app_author"
-    const val APP_VERSION = "version"
-    const val SERVICE_TYPE = "service_type"
-}
-
-/**
  * Responsible for advertising the current device's presence and metadata on the local network.
  *
  * This class handles the network service registration process, allowing other nodes
  * to discover this device's [Display] information. It utilizes the configuration
- * defined in [DisplayAdvertiserConstants] to broadcast the service type and application metadata.
+ * defined in [ScreenServiceConstants] to broadcast the service type and application metadata.
  */
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 expect class DisplayAdvertiser {

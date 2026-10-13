@@ -1,5 +1,6 @@
 package com.lumopos.display.controller.extension
 
+import com.lumopos.display.discovery.ScreenServiceConstants
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.memScoped
@@ -9,6 +10,7 @@ import platform.Network.nw_browse_result_copy_txt_record_object
 import platform.Network.nw_browse_result_t
 import platform.Network.nw_txt_record_access_key
 import platform.Network.nw_txt_record_find_key_non_empty_value
+import kotlin.uuid.Uuid
 
 /**
  * Get Value from TXT Record by Key.
@@ -38,6 +40,9 @@ fun nw_browse_result_t.readTxtValue(key: String): String? {
     return value
 }
 
-val nw_browse_result_t.version get() = this.readTxtValue("version") ?: "unknown"
-val nw_browse_result_t.appName get() = this.readTxtValue("app_name") ?: "unknown"
-val nw_browse_result_t.appAuthor get() = this.readTxtValue("app_author") ?: "unknown"
+val nw_browse_result_t.id get() = this.readTxtValue(ScreenServiceConstants.ID)?.let {
+    Uuid.parse(it)
+}
+val nw_browse_result_t.version get() = this.readTxtValue(ScreenServiceConstants.APP_VERSION) ?: "unknown"
+val nw_browse_result_t.appName get() = this.readTxtValue(ScreenServiceConstants.APP_NAME) ?: "unknown"
+val nw_browse_result_t.appAuthor get() = this.readTxtValue(ScreenServiceConstants.APP_AUTHOR) ?: "unknown"

@@ -1,5 +1,6 @@
 package com.lumopos.display.controller
 
+import com.lumopos.display.controller.extension.clearDiscoveredScreens
 import com.lumopos.display.controller.extension.resolveFoundService
 import com.lumopos.display.controller.extension.resolveLostService
 import com.lumopos.display.data.model.Display
@@ -20,6 +21,7 @@ import platform.Network.nw_browser_set_state_changed_handler
 import platform.Network.nw_browser_start
 import platform.Network.nw_browser_state_cancelled
 import platform.Network.nw_browser_state_failed
+import platform.Network.nw_browser_state_ready
 import platform.Network.nw_browser_t
 import platform.Network.nw_parameters_create
 import platform.darwin.dispatch_queue_create
@@ -31,38 +33,49 @@ actual class ScreenDiscovery {
     private val activeBrowsers: MutableMap<String, nw_browser_t> = mutableMapOf()
     private val restartActions: MutableMap<String, () -> Unit> = mutableMapOf()
 
+    private fun createBrowser(serviceType: String): nw_browser_t {
+        val queue =
+            dispatch_queue_create("com.lumopos.display.controller.discovery.$serviceType", null)
+        val descriptor = memScoped {
+            nw_browse_descriptor_create_bonjour_service(serviceType, null)
+        }
+        nw_browse_descriptor_set_include_txt_record(descriptor, true)
+        val parameters = nw_parameters_create()
+        val browser = nw_browser_create(descriptor, parameters)
+
+        nw_browser_set_queue(browser, queue)
+        return browser
+    }
+
     actual fun discover(serviceType: String): kotlinx.coroutines.flow.Flow<List<Display>> = callbackFlow {
-        val screens = discoveredScreens.getOrPut(serviceType) { mutableListOf() }
-        // All Network.framework callbacks for this browse session run on this queue.
-        val queue = dispatch_queue_create("com.lumopos.display.discovery.$serviceType", null)
-
         fun browsing() {
-            val descriptor = memScoped {
-                nw_browse_descriptor_create_bonjour_service(serviceType, null)
-            }
-            nw_browse_descriptor_set_include_txt_record(descriptor, true)
-            val parameters = nw_parameters_create()
-            val browser = nw_browser_create(descriptor, parameters)
-
-            nw_browser_set_queue(browser, queue)
-
-            nw_browser_set_state_changed_handler(browser) { state, error ->
-                when (state) {
-                    nw_browser_state_failed -> close(RuntimeException("Bonjour browse failed: $error"))
-                    nw_browser_state_cancelled -> close()
-                    else -> Unit
-                }
-            }
+            val browser = createBrowser(serviceType)
 
             nw_browser_set_browse_results_changed_handler(browser) { oldResult, newResult, _ ->
                 when {
                     newResult != null -> {
+                        val screens = discoveredScreens.getOrPut(serviceType) { mutableListOf() }
                         resolveFoundService(newResult, screens, serviceType)
                     }
 
                     oldResult != null -> {
-                        resolveLostService(oldResult, screens)
+                        discoveredScreens[serviceType]?.let {
+                            resolveLostService(oldResult, it)
+                        }
                     }
+                }
+            }
+
+            nw_browser_set_state_changed_handler(browser) { state, error ->
+                when (state) {
+                    nw_browser_state_ready -> {
+                        discoveredScreens[serviceType]?.let {
+                            clearDiscoveredScreens(it)
+                        }
+                    }
+                    nw_browser_state_cancelled -> {}
+                    nw_browser_state_failed -> close(RuntimeException("Bonjour browse failed: $error"))
+                    else -> Unit
                 }
             }
 

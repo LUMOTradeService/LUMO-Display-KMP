@@ -1,8 +1,8 @@
 package com.lumopos.display.controller
 
+import com.lumopos.display.controller.extension.resolveFoundService
+import com.lumopos.display.controller.extension.resolveLostService
 import com.lumopos.display.data.model.Display
-import com.lumopos.display.discovery.extension.foundResolve
-import com.lumopos.display.discovery.extension.lostResolve
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.memScoped
 import kotlinx.coroutines.Dispatchers
@@ -27,12 +27,12 @@ import platform.darwin.dispatch_queue_create
 @OptIn(ExperimentalForeignApi::class)
 @Suppress(names = ["EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING"])
 actual class ScreenDiscovery {
-    private val discoveredDisplays: MutableMap<String, MutableList<Display>> = mutableMapOf()
+    private val discoveredScreens: MutableMap<String, MutableList<Display>> = mutableMapOf()
     private val activeBrowsers: MutableMap<String, nw_browser_t> = mutableMapOf()
     private val restartActions: MutableMap<String, () -> Unit> = mutableMapOf()
 
-    actual fun discover(serviceType: String): kotlinx.coroutines.flow.Flow<List<com.lumopos.display.data.model.Display>> = callbackFlow {
-        val displays = discoveredDisplays.getOrPut(serviceType) { mutableListOf() }
+    actual fun discover(serviceType: String): kotlinx.coroutines.flow.Flow<List<Display>> = callbackFlow {
+        val screens = discoveredScreens.getOrPut(serviceType) { mutableListOf() }
         // All Network.framework callbacks for this browse session run on this queue.
         val queue = dispatch_queue_create("com.lumopos.display.discovery.$serviceType", null)
 
@@ -57,16 +57,17 @@ actual class ScreenDiscovery {
             nw_browser_set_browse_results_changed_handler(browser) { oldResult, newResult, _ ->
                 when {
                     newResult != null -> {
-                        foundResolve(newResult, displays, serviceType)
+                        resolveFoundService(newResult, screens, serviceType)
                     }
 
                     oldResult != null -> {
-                        lostResolve(oldResult, displays)
+                        resolveLostService(oldResult, screens)
                     }
                 }
             }
 
             nw_browser_start(browser)
+            activeBrowsers.getOrPut(serviceType) { browser }
         }
 
         restartActions[serviceType] = ::browsing
@@ -89,6 +90,6 @@ actual class ScreenDiscovery {
     actual fun stopDiscovering(serviceType: String) {
         activeBrowsers.remove(serviceType)?.let { nw_browser_cancel(it) }
         restartActions.remove(serviceType)
-        discoveredDisplays.remove(serviceType)
+        discoveredScreens.remove(serviceType)
     }
 }

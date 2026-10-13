@@ -46,15 +46,15 @@ private fun ProducerScope<List<Display>>.foundScreen(
 }
 
 /**
- * Removes a display from the collection of discovered displays.
+ * Removes a screen from the collection of discovered screens.
  *
- * This function updates the state by filtering out the specified display,
+ * This function updates the state by filtering out the specified screen,
  * ensuring it is no longer advertised or available for pairing within the current scope.
  *
- * @param service The [NsdServiceInfo] representing the display to be removed.
- * @param discoveredScreens The mutable list of currently available displays.
+ * @param service The [NsdServiceInfo] representing the screen to be removed.
+ * @param discoveredScreens The mutable list of currently available screens.
  */
-private fun ProducerScope<List<Display>>.lostDisplay(
+private fun ProducerScope<List<Display>>.lostScreen(
     service: NsdServiceInfo,
     discoveredScreens: MutableList<Display>
 ) {
@@ -106,6 +106,7 @@ private fun ProducerScope<List<Display>>.resolveLegacy(
  * @param nsdManager The system service used to manage network service discovery.
  * @param service The discovered service that needs to be resolved.
  * @param discoveredScreens The mutable list of currently known customer displays to be updated.
+ * @see [NsdManager.registerServiceInfoCallback]
  */
 internal fun ProducerScope<List<Display>>.resolveFoundService(
     nsdManager: NsdManager,
@@ -154,7 +155,7 @@ internal fun ProducerScope<List<Display>>.resolveLostService(
     service: NsdServiceInfo,
     discoveredScreens: MutableList<Display>
 ) {
-    lostDisplay(
+    lostScreen(
         service = service,
         discoveredScreens = discoveredScreens
     )

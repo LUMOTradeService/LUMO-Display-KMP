@@ -1,12 +1,12 @@
 package com.lumopos.display.discovery
 
-import com.lumopos.display.data.model.Display
+import com.lumopos.display.data.model.Screen
 
 /**
  * Responsible for advertising the current device's presence and metadata on the local network.
  *
  * This class handles the network service registration process, allowing other nodes
- * to discover this device's [Display] information. It utilizes the configuration
+ * to discover this device's [Screen] information. It utilizes the configuration
  * defined in [ScreenServiceConstants] to broadcast the service type and application metadata.
  */
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
@@ -14,7 +14,7 @@ expect class DisplayAdvertiser {
     /**
      * The local device information that is being advertised to other nodes on the network.
      */
-    var display: Display
+    var screen: Screen
         private set
 
     /**

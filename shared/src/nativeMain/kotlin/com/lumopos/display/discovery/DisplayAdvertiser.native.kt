@@ -1,6 +1,6 @@
 package com.lumopos.display.discovery
 
-import com.lumopos.display.data.model.Display
+import com.lumopos.display.data.model.Screen
 import com.lumopos.display.data.model.currentAppVersion
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
@@ -36,7 +36,7 @@ actual class DisplayAdvertiser(
 ) {
     private var listener: nw_listener_t = null
 
-    actual var display: Display = Display(
+    actual var screen: Screen = Screen(
         appName = appName,
         appAuthor = appAuthor,
         version = currentAppVersion(),
@@ -45,20 +45,20 @@ actual class DisplayAdvertiser(
 
     @OptIn(ExperimentalForeignApi::class)
     actual suspend fun advertise() {
-        val serviceName = display.serviceName
-        val serviceType = display.serviceType
+        val serviceName = screen.serviceName
+        val serviceType = screen.serviceType
         val parameters = nw_parameters_create_secure_tcp(
             NW_PARAMETERS_DISABLE_PROTOCOL,
             /* TCP = */ NW_PARAMETERS_DEFAULT_CONFIGURATION
         )
         nw_parameters_set_reuse_local_address(parameters, true)
-        listener = nw_listener_create_with_port(display.port.toString(), parameters)
+        listener = nw_listener_create_with_port(screen.port.toString(), parameters)
         val descriptor = nw_advertise_descriptor_create_bonjour_service(serviceName, serviceType, null)
         val txtRecord = nw_txt_record_create_dictionary()
         mapOf(
-            ScreenServiceConstants.APP_VERSION to display.version,
-            ScreenServiceConstants.APP_NAME to display.appName,
-            ScreenServiceConstants.APP_AUTHOR to display.appAuthor,
+            ScreenServiceConstants.APP_VERSION to screen.version,
+            ScreenServiceConstants.APP_NAME to screen.appName,
+            ScreenServiceConstants.APP_AUTHOR to screen.appAuthor,
         ).forEach { (key, value) ->
             val bytes = value.encodeToByteArray()
             if (bytes.isNotEmpty()) {
@@ -79,7 +79,7 @@ actual class DisplayAdvertiser(
         }
         nw_listener_set_state_changed_handler(listener) { state, error ->
             when (state) {
-                nw_listener_state_ready -> println("Bonjour: Listener ready name: ${display.serviceName}, port: ${display.port}, type: ${display.serviceType}")
+                nw_listener_state_ready -> println("Bonjour: Listener ready name: ${screen.serviceName}, port: ${screen.port}, type: ${screen.serviceType}")
                 nw_listener_state_failed -> println("Bonjour: Listener failed with error: $error")
                 else -> {}
             }

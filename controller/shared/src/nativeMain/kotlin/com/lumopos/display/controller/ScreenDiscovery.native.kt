@@ -3,12 +3,13 @@ package com.lumopos.display.controller
 import com.lumopos.display.controller.extension.clearDiscoveredScreens
 import com.lumopos.display.controller.extension.resolveFoundService
 import com.lumopos.display.controller.extension.resolveLostService
-import com.lumopos.display.data.model.Display
+import com.lumopos.display.data.model.Screen
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.memScoped
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOn
 import platform.Network.nw_browse_descriptor_create_bonjour_service
@@ -29,7 +30,7 @@ import platform.darwin.dispatch_queue_create
 @OptIn(ExperimentalForeignApi::class)
 @Suppress(names = ["EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING"])
 actual class ScreenDiscovery {
-    private val discoveredScreens: MutableMap<String, MutableList<Display>> = mutableMapOf()
+    private val discoveredScreens: MutableMap<String, MutableList<Screen>> = mutableMapOf()
     private val activeBrowsers: MutableMap<String, nw_browser_t> = mutableMapOf()
     private val restartActions: MutableMap<String, () -> Unit> = mutableMapOf()
 
@@ -47,7 +48,7 @@ actual class ScreenDiscovery {
         return browser
     }
 
-    actual fun discover(serviceType: String): kotlinx.coroutines.flow.Flow<List<Display>> = callbackFlow {
+    actual fun discover(serviceType: String): Flow<List<Screen>> = callbackFlow {
         fun browsing() {
             val browser = createBrowser(serviceType)
 

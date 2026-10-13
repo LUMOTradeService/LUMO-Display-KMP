@@ -1,6 +1,6 @@
 package com.lumopos.display.controller
 
-import com.lumopos.display.data.model.Display
+import com.lumopos.display.data.model.Screen
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -9,17 +9,17 @@ import kotlinx.coroutines.flow.Flow
  *
  * This class facilitates the connection process between devices by using network service
  * discovery protocols (such as mDNS/DNS-SD) to broadcast its own presence and scan
- * for available [Display] nodes.
+ * for available [Screen] nodes.
  */
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 expect class ScreenDiscovery {
     /**
      * Starts the service discovery process to find available customer displays on the local network.
      *
-     * @return A [Flow] that emits an updated list of [Display] objects whenever
+     * @return A [Flow] that emits an updated list of [Screen] objects whenever
      * a display is discovered or lost.
      */
-    fun discover(serviceType: String): Flow<List<Display>>
+    fun discover(serviceType: String): Flow<List<Screen>>
     /**
      * Pauses the active service discovery process.
      *

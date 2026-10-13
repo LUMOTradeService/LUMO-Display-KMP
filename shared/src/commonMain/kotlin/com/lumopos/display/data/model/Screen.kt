@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
 @Serializable
-data class Display(
+data class Screen(
     val id: Uuid = Uuid.random(),
     val appName: String,
     val appAuthor: String,

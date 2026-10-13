@@ -1,6 +1,6 @@
 package com.lumopos.display.screen
 
-import com.lumopos.display.data.model.Display
+import com.lumopos.display.data.model.Screen
 
 /**
  * Constants used as metadata keys or configuration values when advertising the display service
@@ -27,7 +27,7 @@ expect class ScreenAdvertiser {
     /**
      * The local device information that is being advertised to other nodes on the network.
      */
-    var display: Display
+    var screen: Screen
         private set
 
     /**

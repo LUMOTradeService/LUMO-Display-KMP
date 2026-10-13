@@ -1,14 +1,12 @@
 package com.lumopos.display.controller.extension
 
-import com.lumopos.display.data.model.Display
+import com.lumopos.display.data.model.Screen
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.toKString
 import kotlinx.coroutines.channels.ProducerScope
 import platform.Network.nw_browse_result_copy_endpoint
 import platform.Network.nw_browse_result_t
 import platform.Network.nw_endpoint_get_bonjour_service_name
-import platform.Network.nw_txt_record_access_key
-import platform.Network.nw_txt_record_find_key_non_empty_value
 import kotlin.uuid.Uuid
 
 /**
@@ -20,9 +18,9 @@ import kotlin.uuid.Uuid
  * @param serviceType
  */
 @OptIn(ExperimentalForeignApi::class)
-internal fun ProducerScope<List<Display>>.resolveFoundService(
+internal fun ProducerScope<List<Screen>>.resolveFoundService(
     newResult: nw_browse_result_t,
-    discoveredScreens: MutableList<Display>,
+    discoveredScreens: MutableList<Screen>,
     serviceType: String
 ) {
     val endpoint = nw_browse_result_copy_endpoint(newResult)
@@ -30,7 +28,7 @@ internal fun ProducerScope<List<Display>>.resolveFoundService(
     val screenId = newResult.id ?: Uuid.random()
     discoveredScreens.removeAll { it.serviceName == serviceName || it.id == screenId }
     discoveredScreens.add(
-        Display(
+        Screen(
             id = screenId,
             serviceName = serviceName,
             appName = newResult.appName,
@@ -52,9 +50,9 @@ internal fun ProducerScope<List<Display>>.resolveFoundService(
  * @see [nw_browse_result_copy_endpoint]
  */
 @OptIn(ExperimentalForeignApi::class)
-internal fun ProducerScope<List<Display>>.resolveLostService(
+internal fun ProducerScope<List<Screen>>.resolveLostService(
     oldResult: nw_browse_result_t,
-    discoveredScreens: MutableList<Display>
+    discoveredScreens: MutableList<Screen>
 ) {
     val serviceName =
         nw_endpoint_get_bonjour_service_name(nw_browse_result_copy_endpoint(oldResult))?.toKString()
@@ -64,8 +62,8 @@ internal fun ProducerScope<List<Display>>.resolveLostService(
     }
 }
 
-internal fun ProducerScope<List<Display>>.clearDiscoveredScreens(
-    discoveredScreens: MutableList<Display>
+internal fun ProducerScope<List<Screen>>.clearDiscoveredScreens(
+    discoveredScreens: MutableList<Screen>
 ) {
     discoveredScreens.clear()
     trySend(

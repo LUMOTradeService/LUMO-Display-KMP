@@ -3,7 +3,7 @@ package com.lumopos.display.controller
 import android.content.Context
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
-import com.lumopos.display.data.model.Display
+import com.lumopos.display.data.model.Screen
 import com.lumopos.display.controller.extension.resolveFoundService
 import com.lumopos.display.controller.extension.resolveLostService
 import com.lumopos.display.controller.extension.clearDiscoveredScreens
@@ -21,9 +21,9 @@ actual class ScreenDiscovery(
         Context.NSD_SERVICE
     ) as NsdManager
     private var discoveryListeners: MutableMap<String, NsdManager.DiscoveryListener> = mutableMapOf()
-    private val discoveredScreens: MutableMap<String, MutableList<Display>> = mutableMapOf()
+    private val discoveredScreens: MutableMap<String, MutableList<Screen>> = mutableMapOf()
 
-    actual fun discover(serviceType: String): Flow<List<Display>> = callbackFlow {
+    actual fun discover(serviceType: String): Flow<List<Screen>> = callbackFlow {
         val discoveryListener = object : NsdManager.DiscoveryListener {
             override fun onServiceFound(service: NsdServiceInfo) {
                 val screens = discoveredScreens.getOrPut(serviceType) { mutableListOf() }

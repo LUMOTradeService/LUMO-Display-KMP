@@ -12,7 +12,7 @@ class SetupScreenViewModel(
     val displayAdvertiser: DisplayAdvertiser
 ): ViewModel() {
     val setupScreenState = SetupScreenState(
-        display = displayAdvertiser.display
+        screen = displayAdvertiser.screen
     )
 
     init {

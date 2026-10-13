@@ -12,7 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.lumopos.display.data.model.Display
+import com.lumopos.display.data.model.Screen
 import lumodisplay.compose.generated.resources.Res
 import lumodisplay.compose.generated.resources.app_name
 import lumodisplay.compose.generated.resources.docs
@@ -102,10 +102,10 @@ fun LazyListScope.additionalContent(
  * Adds a group of items to a [LazyListScope] that display information about the current device
  * and application metadata, including the device name, IP address, app name, version, and author.
  *
- * @param display The [Display] data model containing the information to be shown in the list.
+ * @param screen The [Screen] data model containing the information to be shown in the list.
  */
 fun LazyListScope.aboutDisplayItems(
-    display: Display
+    screen: Screen
 ) {
     item(
         key = "AboutDeviceAndAppTitle"
@@ -125,7 +125,7 @@ fun LazyListScope.aboutDisplayItems(
     ) {
         AboutDisplayItem(
             headline = stringResource(Res.string.title_device_name),
-            supporting = display.serviceName
+            supporting = screen.serviceName
         )
     }
     item(
@@ -133,7 +133,7 @@ fun LazyListScope.aboutDisplayItems(
     ) {
         AboutDisplayItem(
             headline = stringResource(Res.string.title_ip_address),
-            supporting = stringResource(Res.string.text_ip_address_port, display.ipAddress ?: "unknown", display.port ?: "unknown")
+            supporting = stringResource(Res.string.text_ip_address_port, screen.ipAddress ?: "unknown", screen.port ?: "unknown")
         )
     }
     item(
@@ -141,7 +141,7 @@ fun LazyListScope.aboutDisplayItems(
     ) {
         AboutDisplayItem(
             headline = stringResource(Res.string.title_app_name),
-            supporting = display.appName
+            supporting = screen.appName
         )
     }
     item(
@@ -149,7 +149,7 @@ fun LazyListScope.aboutDisplayItems(
     ) {
         AboutDisplayItem(
             headline = stringResource(Res.string.title_version),
-            supporting = display.version
+            supporting = screen.version
         )
     }
     item(
@@ -157,7 +157,7 @@ fun LazyListScope.aboutDisplayItems(
     ) {
         AboutDisplayItem(
             headline = stringResource(Res.string.title_author),
-            supporting = display.appAuthor
+            supporting = screen.appAuthor
         )
     }
 }

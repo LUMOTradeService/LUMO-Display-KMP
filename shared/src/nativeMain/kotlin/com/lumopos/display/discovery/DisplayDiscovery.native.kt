@@ -1,6 +1,6 @@
 package com.lumopos.display.discovery
 
-import com.lumopos.display.data.model.Display
+import com.lumopos.display.data.model.Screen
 import com.lumopos.display.discovery.extension.foundResolve
 import com.lumopos.display.discovery.extension.lostResolve
 import kotlinx.cinterop.BetaInteropApi
@@ -26,12 +26,12 @@ import platform.darwin.dispatch_queue_create
 @OptIn(ExperimentalForeignApi::class)
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 actual class DisplayDiscovery() {
-    private val discoveredDisplays: MutableMap<String, MutableList<Display>> = mutableMapOf()
+    private val discoveredDisplays: MutableMap<String, MutableList<Screen>> = mutableMapOf()
     private val activeBrowsers: MutableMap<String, nw_browser_t> = mutableMapOf()
     private val restartActions: MutableMap<String, () -> Unit> = mutableMapOf()
 
     @OptIn(BetaInteropApi::class)
-    actual fun discover(serviceType: String): Flow<List<Display>> = callbackFlow {
+    actual fun discover(serviceType: String): Flow<List<Screen>> = callbackFlow {
         val displays = discoveredDisplays.getOrPut(serviceType) { mutableListOf() }
         // All Network.framework callbacks for this browse session run on this queue.
         val queue = dispatch_queue_create("com.lumopos.display.discovery.$serviceType", null)

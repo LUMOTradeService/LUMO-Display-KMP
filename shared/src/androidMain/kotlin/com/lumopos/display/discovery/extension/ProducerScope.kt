@@ -4,12 +4,12 @@ import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
 import android.os.Build
 import android.os.ext.SdkExtensions
-import com.lumopos.display.data.model.Display
+import com.lumopos.display.data.model.Screen
 import kotlinx.coroutines.channels.ProducerScope
 import kotlin.uuid.Uuid
 
 /**
- * Updates the list of [discoveredDisplays] with information from the resolved [service]
+ * Updates the list of [discoveredScreens] with information from the resolved [service]
  * and emits the updated list to the [ProducerScope].
  *
  * This function extracts the display ID and version from the service attributes,
@@ -17,20 +17,20 @@ import kotlin.uuid.Uuid
  * copy of the list to the flow.
  *
  * @param service The [NsdServiceInfo] containing the discovered service details.
- * @param discoveredDisplays The mutable list tracking currently active displays.
+ * @param discoveredScreens The mutable list tracking currently active displays.
  */
-private fun ProducerScope<List<Display>>.foundDisplay(
+private fun ProducerScope<List<Screen>>.foundDisplay(
     service: NsdServiceInfo,
-    discoveredDisplays: MutableList<Display>,
+    discoveredScreens: MutableList<Screen>,
 ) {
     val lock = Any()
 
     synchronized(lock) {
         val displayId = service.id ?: Uuid.random()
 
-        discoveredDisplays.removeAll { it.id == displayId }
-        discoveredDisplays.add(
-            Display(
+        discoveredScreens.removeAll { it.id == displayId }
+        discoveredScreens.add(
+            Screen(
                 id = displayId,
                 appName = service.appName,
                 appAuthor = service.appAuthor,
@@ -42,7 +42,7 @@ private fun ProducerScope<List<Display>>.foundDisplay(
             )
         )
         trySend(
-            discoveredDisplays.toList()
+            discoveredScreens.toList()
         )
     }
 }
@@ -54,17 +54,17 @@ private fun ProducerScope<List<Display>>.foundDisplay(
  * ensuring it is no longer advertised or available for pairing within the current scope.
  *
  * @param service The [NsdServiceInfo] representing the display to be removed.
- * @param discoveredDisplays The mutable list of currently available displays.
+ * @param discoveredScreens The mutable list of currently available displays.
  */
-private fun ProducerScope<List<Display>>.lostDisplay(
+private fun ProducerScope<List<Screen>>.lostDisplay(
     service: NsdServiceInfo,
-    discoveredDisplays: MutableList<Display>
+    discoveredScreens: MutableList<Screen>
 ) {
     val lock = Any()
 
     synchronized(lock) {
-        discoveredDisplays.removeAll { it.serviceName == service.serviceName }
-        trySend(discoveredDisplays.toList())
+        discoveredScreens.removeAll { it.serviceName == service.serviceName }
+        trySend(discoveredScreens.toList())
     }
 }
 
@@ -73,23 +73,23 @@ private fun ProducerScope<List<Display>>.lostDisplay(
  *
  * This method is used for Android versions prior to Tiramisu (API 33) or where the newer
  * service info callbacks are not supported. Upon successful resolution, it extracts the
- * host address and updates the [discoveredDisplays] list via [foundDisplay].
+ * host address and updates the [discoveredScreens] list via [foundDisplay].
  *
  * @param nsdManager The system service used to resolve the network service.
  * @param service The service discovered on the network that needs to be resolved.
- * @param discoveredDisplays The mutable list of currently discovered customer displays to be updated.
+ * @param discoveredScreens The mutable list of currently discovered customer displays to be updated.
  */
-private fun ProducerScope<List<Display>>.resolveLegacy(
+private fun ProducerScope<List<Screen>>.resolveLegacy(
     nsdManager: NsdManager,
     service: NsdServiceInfo,
-    discoveredDisplays: MutableList<Display>
+    discoveredScreens: MutableList<Screen>
 ) {
     @Suppress("DEPRECATION")
     nsdManager.resolveService(service, object : NsdManager.ResolveListener {
         override fun onServiceResolved(resolved: NsdServiceInfo) {
             foundDisplay(
                 service = resolved,
-                discoveredDisplays = discoveredDisplays
+                discoveredScreens = discoveredScreens
             )
         }
 
@@ -104,24 +104,24 @@ private fun ProducerScope<List<Display>>.resolveLegacy(
  * introduced in Android T (API 33).
  *
  * This function registers a callback to monitor a specific [NsdServiceInfo]. When the service
- * is updated with network details (like host addresses), it updates the [discoveredDisplays]
+ * is updated with network details (like host addresses), it updates the [discoveredScreens]
  * list and emits the new state to the [ProducerScope].
  *
  * @param nsdManager The system service used to manage network service discovery.
  * @param service The discovered service that needs to be resolved.
- * @param discoveredDisplays The mutable list of currently known customer displays to be updated.
+ * @param discoveredScreens The mutable list of currently known customer displays to be updated.
  */
-internal fun ProducerScope<List<Display>>.foundResolve(
+internal fun ProducerScope<List<Screen>>.foundResolve(
     nsdManager: NsdManager,
     service: NsdServiceInfo,
-    discoveredDisplays: MutableList<Display>
+    discoveredScreens: MutableList<Screen>
 ) {
     if (SdkExtensions.getExtensionVersion(Build.VERSION_CODES.TIRAMISU) >= 7) {
         nsdManager.registerServiceInfoCallback(service, Runnable::run, object : NsdManager.ServiceInfoCallback {
             override fun onServiceUpdated(updated: NsdServiceInfo) {
                 foundDisplay(
                     service = updated,
-                    discoveredDisplays = discoveredDisplays
+                    discoveredScreens = discoveredScreens
                 )
             }
 
@@ -134,7 +134,7 @@ internal fun ProducerScope<List<Display>>.foundResolve(
             }
         })
     } else {
-        resolveLegacy(nsdManager, service, discoveredDisplays)
+        resolveLegacy(nsdManager, service, discoveredScreens)
     }
 }
 
@@ -142,25 +142,25 @@ internal fun ProducerScope<List<Display>>.foundResolve(
  * Handles the event when a network service is no longer available.
  *
  */
-internal fun ProducerScope<List<Display>>.lostResolve(
+internal fun ProducerScope<List<Screen>>.lostResolve(
     service: NsdServiceInfo,
-    discoveredDisplays: MutableList<Display>
+    discoveredScreens: MutableList<Screen>
 ) {
     lostDisplay(
         service = service,
-        discoveredDisplays = discoveredDisplays
+        discoveredScreens = discoveredScreens
     )
 }
 
-internal fun ProducerScope<List<Display>>.startedResolve(
-    discoveredDisplays: MutableList<Display>
+internal fun ProducerScope<List<Screen>>.startedResolve(
+    discoveredScreens: MutableList<Screen>
 ) {
     val lock = Any()
 
     synchronized(lock) {
-        discoveredDisplays.clear()
+        discoveredScreens.clear()
         trySend(
-            discoveredDisplays.toList()
+            discoveredScreens.toList()
         )
     }
 }

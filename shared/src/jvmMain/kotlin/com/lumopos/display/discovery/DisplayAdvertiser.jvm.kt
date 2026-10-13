@@ -1,6 +1,6 @@
 package com.lumopos.display.discovery
 
-import com.lumopos.display.data.model.Display
+import com.lumopos.display.data.model.Screen
 import com.lumopos.display.data.model.currentAppVersion
 import com.lumopos.display.data.model.getDeviceName
 
@@ -10,7 +10,7 @@ actual class DisplayAdvertiser(
     appAuthor: String,
     serviceType: String,
 ) {
-    actual var display: Display = Display(
+    actual var screen: Screen = Screen(
         serviceName = getDeviceName(),
         appName = appName,
         appAuthor = appAuthor,

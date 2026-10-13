@@ -3,7 +3,7 @@ package com.lumopos.display.discovery
 import android.content.Context
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
-import com.lumopos.display.data.model.Display
+import com.lumopos.display.data.model.Screen
 import com.lumopos.display.data.model.currentAppVersion
 import com.lumopos.display.data.model.getDeviceName
 
@@ -19,7 +19,7 @@ actual class DisplayAdvertiser(
     ) as NsdManager
     private var registrationListener: NsdManager.RegistrationListener? = null
 
-    actual var display: Display = Display(
+    actual var screen: Screen = Screen(
         serviceName = getDeviceName(context),
         appName = appName,
         appAuthor = appAuthor,
@@ -30,13 +30,13 @@ actual class DisplayAdvertiser(
 
     actual suspend fun advertise() {
         val serviceInfo = NsdServiceInfo().apply {
-            this.serviceType = display.serviceType
-            this.serviceName = display.serviceName
-            this.port = display.port!!
-            setAttribute(ScreenServiceConstants.APP_NAME, display.appName)
-            setAttribute(ScreenServiceConstants.APP_AUTHOR, display.appAuthor)
-            setAttribute(ScreenServiceConstants.APP_VERSION, display.version)
-            setAttribute(ScreenServiceConstants.ID, display.id.toString())
+            this.serviceType = screen.serviceType
+            this.serviceName = screen.serviceName
+            this.port = screen.port!!
+            setAttribute(ScreenServiceConstants.APP_NAME, screen.appName)
+            setAttribute(ScreenServiceConstants.APP_AUTHOR, screen.appAuthor)
+            setAttribute(ScreenServiceConstants.APP_VERSION, screen.version)
+            setAttribute(ScreenServiceConstants.ID, screen.id.toString())
         }
 
         registrationListener = object : NsdManager.RegistrationListener {

@@ -1,6 +1,6 @@
 package com.lumopos.display.discovery.extension
 
-import com.lumopos.display.data.model.Display
+import com.lumopos.display.data.model.Screen
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.memScoped
@@ -11,10 +11,7 @@ import kotlinx.coroutines.channels.ProducerScope
 import platform.Network.nw_browse_result_copy_endpoint
 import platform.Network.nw_browse_result_copy_txt_record_object
 import platform.Network.nw_browse_result_t
-import platform.Network.nw_endpoint_get_bonjour_service_domain
 import platform.Network.nw_endpoint_get_bonjour_service_name
-import platform.Network.nw_endpoint_get_hostname
-import platform.Network.nw_endpoint_get_port
 import platform.Network.nw_txt_record_access_key
 import platform.Network.nw_txt_record_find_key_non_empty_value
 
@@ -35,15 +32,15 @@ fun nw_browse_result_t.readTxtValue(key: String): String? {
 }
 
 @OptIn(ExperimentalForeignApi::class)
-fun ProducerScope<List<Display>>.foundResolve(
+fun ProducerScope<List<Screen>>.foundResolve(
     newResult: nw_browse_result_t,
-    displays: MutableList<Display>,
+    screens: MutableList<Screen>,
     serviceType: String
 ) {
     val endpoint = nw_browse_result_copy_endpoint(newResult)
     val serviceName = nw_endpoint_get_bonjour_service_name(endpoint)?.toKString() ?: "unknown"
-    displays.add(
-        Display(
+    screens.add(
+        Screen(
             serviceName = serviceName,
             appName = newResult.appName,
             appAuthor = newResult.appAuthor,
@@ -51,18 +48,18 @@ fun ProducerScope<List<Display>>.foundResolve(
             serviceType = serviceType
         )
     )
-    trySend(displays.toList())
+    trySend(screens.toList())
 }
 
 @OptIn(ExperimentalForeignApi::class)
-fun ProducerScope<List<Display>>.lostResolve(
+fun ProducerScope<List<Screen>>.lostResolve(
     oldResult: nw_browse_result_t,
-    displays: MutableList<Display>
+    screens: MutableList<Screen>
 ) {
     val serviceName =
         nw_endpoint_get_bonjour_service_name(nw_browse_result_copy_endpoint(oldResult))?.toKString()
     serviceName?.let { name ->
-        displays.removeAll { it.serviceName == name }
-        trySend(displays.toList())
+        screens.removeAll { it.serviceName == name }
+        trySend(screens.toList())
     }
 }

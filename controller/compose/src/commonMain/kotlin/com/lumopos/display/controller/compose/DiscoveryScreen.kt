@@ -30,7 +30,7 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import com.lumopos.display.controller.compose.state.DisplaysScreenState
-import com.lumopos.display.data.model.Display
+import com.lumopos.display.data.model.Screen
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.modules.SerializersModule
@@ -51,7 +51,7 @@ private data object DisplaysNavKey: NavKey {
 
     @Serializable
     data class Detail(
-        val display: Display
+        val screen: Screen
     ): NavKey
 }
 
@@ -68,7 +68,7 @@ private val DisplaysSavedStateConfiguration = SavedStateConfiguration {
 private fun DisplaysListPane(
     backStack: NavBackStack<NavKey>,
     title: @Composable () -> Unit = {},
-    availableDisplays: List<Display>,
+    availableScreens: List<Screen>,
     navigationIcon: @Composable () -> Unit = {}
 ) {
     Scaffold(
@@ -106,7 +106,7 @@ private fun DisplaysListPane(
 //                        Text("Hello display")
 //                    }
 //                }
-                if (availableDisplays.isNotEmpty()) {
+                if (availableScreens.isNotEmpty()) {
                     item(
                         key = "title-available"
                     ) {
@@ -121,17 +121,17 @@ private fun DisplaysListPane(
                     }
                 }
                 items(
-                    count = availableDisplays.size,
+                    count = availableScreens.size,
                     key = { index ->
-                        availableDisplays[index].id.toString()
+                        availableScreens[index].id.toString()
                     }
                 ) { index ->
-                    availableDisplays[index].let { display ->
+                    availableScreens[index].let { display ->
                         SegmentedListItem(
                             onClick = {},
                             shapes = ListItemDefaults.segmentedShapes(
                                 index = index,
-                                count = availableDisplays.size
+                                count = availableScreens.size
                             ),
                             colors = ListItemDefaults.segmentedColors(
                                 containerColor = MaterialTheme.colorScheme.surfaceContainerLowest
@@ -230,7 +230,7 @@ fun DisplaysScreen(
                     backStack = backStack,
                     navigationIcon = navigationIcon,
                     title = title,
-                    availableDisplays = discoveredDisplays
+                    availableScreens = discoveredDisplays
                 )
             }
             entry<DisplaysNavKey.Detail>(
@@ -255,7 +255,7 @@ fun DisplaysListPreview() {
             state = DisplaysScreenState(
                 MutableStateFlow(
                     listOf(
-                        Display(
+                        Screen(
                             serviceName = "Device name",
                             appName = "LUMO Display",
                             appAuthor = "LUMO trade service s.r.o.",
@@ -264,7 +264,7 @@ fun DisplaysListPreview() {
                             ipAddress = "192.168.0.10",
                             port = 8080
                         ),
-                        Display(
+                        Screen(
                             serviceName = "Phone 16",
                             appName = "LUMO Display",
                             appAuthor = "LUMO trade service s.r.o.",
@@ -273,7 +273,7 @@ fun DisplaysListPreview() {
                             ipAddress = "192.168.0.10",
                             port = 8080
                         ),
-                        Display(
+                        Screen(
                             serviceName = "My Device",
                             appName = "LUMO Display",
                             appAuthor = "LUMO trade service s.r.o.",
@@ -282,7 +282,7 @@ fun DisplaysListPreview() {
                             ipAddress = "192.168.0.10",
                             port = 8080
                         ),
-                        Display(
+                        Screen(
                             serviceName = "Device",
                             appName = "LUMO Display",
                             appAuthor = "LUMO trade service s.r.o.",

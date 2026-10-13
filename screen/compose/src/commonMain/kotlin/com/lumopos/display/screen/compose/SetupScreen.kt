@@ -28,7 +28,7 @@ import androidx.savedstate.serialization.SavedStateConfiguration
 import androidx.window.core.layout.WindowSizeClass
 import com.lumopos.display.compose.aboutDisplayItems
 import com.lumopos.display.compose.additionalContent
-import com.lumopos.display.data.model.Display
+import com.lumopos.display.data.model.Screen
 import com.lumopos.display.screen.compose.state.SetupScreenState
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
@@ -94,7 +94,7 @@ private fun CompactSetupScreen(
                     )
                 }
                 aboutDisplayItems(
-                    display = state.display
+                    screen = state.screen
                 )
             }
         }
@@ -161,7 +161,7 @@ private fun ExpandedSetupScreen(
                             verticalArrangement = Arrangement.spacedBy(2.dp)
                         ) {
                             aboutDisplayItems(
-                                display = state.display
+                                screen = state.screen
                             )
                         }
                     }
@@ -199,7 +199,7 @@ fun SetupScreen(
 fun SetupScreenPreview() {
     SetupScreen(
         state = SetupScreenState(
-            display = Display(
+            screen = Screen(
                 appName = stringResource(Res.string.app_name),
                 appAuthor = "LUMO trade service s.r.o.",
                 version = "1.0.0",

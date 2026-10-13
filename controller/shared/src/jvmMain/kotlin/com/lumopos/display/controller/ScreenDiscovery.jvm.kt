@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Suppress(names = ["EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING"])
 actual class ScreenDiscovery {
-    actual fun discover(serviceType: String, startDiscovering: Boolean): Flow<List<Screen>> {
+    actual fun screens(serviceType: String): Flow<List<Screen>> {
         TODO("Not yet implemented")
     }
 
@@ -16,5 +16,14 @@ actual class ScreenDiscovery {
     }
 
     actual fun stopDiscovering(serviceType: String) {
+    }
+
+    actual interface ScreenDiscoveryListener {
+        actual fun onServiceFound(screen: Screen)
+        actual fun onServiceLost(screen: Screen)
+        actual fun onDiscoveryStarted()
+        actual fun onDiscoveryStopped()
+        actual fun onStartDiscoveryFailed(errorCode: Int)
+        actual fun onStopDiscoveryFailed(errorCode: Int)
     }
 }

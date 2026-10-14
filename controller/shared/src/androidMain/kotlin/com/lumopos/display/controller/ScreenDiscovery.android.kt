@@ -172,10 +172,19 @@ actual class ScreenDiscovery(
                 }
             }
             override fun onDiscoveryStarted(serviceType: String) {
-                discoveredScreens[serviceType]?.clear()
+                discoveredScreens[serviceType]?.let { screens ->
+                    screens.clear()
+                    screenDiscoveryListeners.forEach { listener ->
+                        listener.onDiscoveryStarted()
+                    }
+                }
             }
             override fun onDiscoveryStopped(serviceType: String) {
-                discoveredScreens[serviceType]?.clear()
+                discoveredScreens[serviceType]?.let {
+                    screenDiscoveryListeners.forEach { listener ->
+                        listener.onDiscoveryStopped()
+                    }
+                }
             }
             override fun onStartDiscoveryFailed(serviceType: String, errorCode: Int) {
                 screenDiscoveryListeners.forEach { listener ->

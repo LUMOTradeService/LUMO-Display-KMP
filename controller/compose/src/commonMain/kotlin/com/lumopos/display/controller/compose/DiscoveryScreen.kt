@@ -29,7 +29,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
-import com.lumopos.display.controller.compose.state.DisplaysScreenState
+import com.lumopos.display.controller.compose.state.DiscoveryScreenState
 import com.lumopos.display.data.model.Screen
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.serialization.Serializable
@@ -200,10 +200,10 @@ fun DisplaysDetailPanePlaceholder() {
 }
 
 @Composable
-fun DisplaysScreen(
+fun DiscoveryScreen(
     navigationIcon: @Composable () -> Unit = {},
     title: @Composable () -> Unit = {},
-    state: DisplaysScreenState
+    state: DiscoveryScreenState
 ) {
     val listDetailSceneStrategy = rememberListDetailSceneStrategy<NavKey>()
     val discoveredDisplays by state.discoveredDisplays.collectAsStateWithLifecycle()
@@ -246,13 +246,13 @@ fun DisplaysScreen(
     showBackground = true
 )
 @Composable
-fun DisplaysListPreview() {
+fun DiscoveryListPreview() {
     MaterialTheme {
-        DisplaysScreen(
+        DiscoveryScreen(
             title = {
                 Text("Screens")
             },
-            state = DisplaysScreenState(
+            state = DiscoveryScreenState(
                 MutableStateFlow(
                     listOf(
                         Screen(

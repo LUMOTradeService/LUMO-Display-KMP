@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.flowOn
 import platform.Network.nw_browse_descriptor_create_bonjour_service
 import platform.Network.nw_browse_descriptor_set_include_txt_record
 import platform.Network.nw_browse_result_copy_endpoint
+import platform.Network.nw_browse_result_t
 import platform.Network.nw_browser_cancel
 import platform.Network.nw_browser_create
 import platform.Network.nw_browser_set_browse_results_changed_handler
@@ -54,6 +55,46 @@ actual class ScreenDiscovery {
 
         nw_browser_set_queue(browser, queue)
         return browser
+    }
+
+    private fun resolveFoundService(
+        newResult: nw_browse_result_t,
+        screens: MutableList<Screen>,
+        serviceType: String
+    ) {
+        val endpoint = nw_browse_result_copy_endpoint(newResult)
+        val serviceName = nw_endpoint_get_bonjour_service_name(endpoint)?.toKString() ?: "unknown"
+        val screenId = newResult.id ?: Uuid.random()
+        screens.removeAll { it.serviceName == serviceName || it.id == screenId }
+        val screen = Screen(
+            id = screenId,
+            serviceName = serviceName,
+            appName = newResult.appName,
+            appAuthor = newResult.appAuthor,
+            version = newResult.version,
+            serviceType = serviceType
+        )
+
+        screens.add(screen)
+
+        screenDiscoveryListeners.forEach { listener ->
+            listener.onServiceFound(screen)
+        }
+    }
+
+    private fun resolveLostService(
+        oldResult: nw_browse_result_t,
+        screens: MutableList<Screen>
+    ) {
+        val serviceName =
+            nw_endpoint_get_bonjour_service_name(nw_browse_result_copy_endpoint(oldResult))?.toKString()
+
+        screenDiscoveryListeners.forEach { listener ->
+            screens.find { it.serviceName == serviceName }?.let { screen ->
+                screens.remove(screen)
+                listener.onServiceLost(screen)
+            }
+        }
     }
 
     actual fun screens(serviceType: String): Flow<List<Screen>> = callbackFlow {
@@ -101,29 +142,12 @@ actual class ScreenDiscovery {
             when {
                 newResult != null -> {
                     val screens = discoveredScreens.getOrPut(serviceType) { mutableListOf() }
-                    val endpoint = nw_browse_result_copy_endpoint(newResult)
-                    val serviceName = nw_endpoint_get_bonjour_service_name(endpoint)?.toKString() ?: "unknown"
-                    val screenId = newResult.id ?: Uuid.random()
-                    screens.removeAll { it.serviceName == serviceName || it.id == screenId }
-                    screens.add(
-                        Screen(
-                            id = screenId,
-                            serviceName = serviceName,
-                            appName = newResult.appName,
-                            appAuthor = newResult.appAuthor,
-                            version = newResult.version,
-                            serviceType = serviceType
-                        )
-                    )
+                    resolveFoundService(newResult, screens, serviceType)
                 }
 
                 oldResult != null -> {
                     discoveredScreens[serviceType]?.let { screens ->
-                        val serviceName =
-                            nw_endpoint_get_bonjour_service_name(nw_browse_result_copy_endpoint(oldResult))?.toKString()
-                        serviceName?.let { name ->
-                            screens.removeAll { it.serviceName == name }
-                        }
+                        resolveLostService(oldResult, screens)
                     }
                 }
             }
@@ -134,10 +158,19 @@ actual class ScreenDiscovery {
                 nw_browser_state_ready -> {
                     discoveredScreens[serviceType]?.let {
                         discoveredScreens.clear()
+                        screenDiscoveryListeners.forEach { listener ->
+                            listener.onDiscoveryStarted()
+                        }
                     }
                 }
 
-                nw_browser_state_cancelled -> {}
+                nw_browser_state_cancelled -> {
+                    discoveredScreens[serviceType]?.let {
+                        screenDiscoveryListeners.forEach { listener ->
+                            listener.onDiscoveryStopped()
+                        }
+                    }
+                }
                 nw_browser_state_failed -> {
                     screenDiscoveryListeners.forEach { listener ->
                         listener.onDiscoveryFailed(error.toString())

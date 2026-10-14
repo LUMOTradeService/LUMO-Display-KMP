@@ -8,11 +8,10 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import com.lumopos.display.controller.ScreenDiscovery
-import com.lumopos.display.controller.compose.DisplaysScreen
+import com.lumopos.display.controller.compose.DiscoveryScreen
 import com.lumopos.display.controller.compose.app.DisplaysNavKey
-import com.lumopos.display.controller.compose.state.DisplaysScreenState
-import com.lumopos.display.controller.compose.viewModel.rememberDisplaysScreenViewModel
-import com.lumopos.display.discovery.DisplayDiscovery
+import com.lumopos.display.controller.compose.state.DiscoveryScreenState
+import com.lumopos.display.controller.compose.viewModel.rememberDiscoveryScreenViewModel
 import lumodisplay.controller.app.composeapp.generated.resources.Res
 import lumodisplay.controller.app.composeapp.generated.resources.arrow_back
 import lumodisplay.controller.app.composeapp.generated.resources.request_back
@@ -26,13 +25,13 @@ fun EntryProviderScope<NavKey>.screensEntry(
     serviceType: String = "_display._tcp"
 ) {
     entry<DisplaysNavKey> {
-        val displaysScreenViewModel = rememberDisplaysScreenViewModel(
+        val displaysScreenViewModel = rememberDiscoveryScreenViewModel(
             discovery = discovery,
             serviceType = serviceType
         )
 
-        DisplaysScreen(
-            state = DisplaysScreenState(
+        DiscoveryScreen(
+            state = DiscoveryScreenState(
                 discoveredDisplays = displaysScreenViewModel.discoveredDisplays
             ),
             navigationIcon = {

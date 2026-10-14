@@ -7,6 +7,7 @@ import androidx.lifecycle.compose.dropUnlessStarted
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
+import com.lumopos.display.controller.ScreenDiscovery
 import com.lumopos.display.controller.compose.DisplaysScreen
 import com.lumopos.display.controller.compose.app.DisplaysNavKey
 import com.lumopos.display.controller.compose.state.DisplaysScreenState
@@ -19,9 +20,9 @@ import lumodisplay.controller.app.composeapp.generated.resources.title_displays
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-fun EntryProviderScope<NavKey>.displaysEntry(
+fun EntryProviderScope<NavKey>.screensEntry(
     appBackStack: NavBackStack<NavKey>,
-    discovery: DisplayDiscovery,
+    discovery: ScreenDiscovery,
     serviceType: String = "_display._tcp"
 ) {
     entry<DisplaysNavKey> {

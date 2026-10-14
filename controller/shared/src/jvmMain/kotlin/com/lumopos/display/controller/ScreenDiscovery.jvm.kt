@@ -18,12 +18,11 @@ actual class ScreenDiscovery {
     actual fun stopDiscovering(serviceType: String) {
     }
 
-    actual interface ScreenDiscoveryListener {
+    actual interface Listener {
         actual fun onServiceFound(screen: Screen)
         actual fun onServiceLost(screen: Screen)
         actual fun onDiscoveryStarted()
         actual fun onDiscoveryStopped()
-        actual fun onStartDiscoveryFailed(errorCode: Int)
-        actual fun onStopDiscoveryFailed(errorCode: Int)
+        actual fun onDiscoveryFailed(errorCode: String)
     }
 }

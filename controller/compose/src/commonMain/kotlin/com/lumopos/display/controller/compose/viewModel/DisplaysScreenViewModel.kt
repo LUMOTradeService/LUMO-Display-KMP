@@ -4,25 +4,30 @@ import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.lumopos.display.controller.ScreenDiscovery
 import com.lumopos.display.discovery.DisplayDiscovery
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 
 class DisplaysScreenViewModel(
-    private val discovery: DisplayDiscovery,
+    private val discovery: ScreenDiscovery,
     private val serviceType: String
 ): ViewModel() {
-    val discoveredDisplays = discovery.discover(serviceType).stateIn(
+    val discoveredDisplays = discovery.screens(serviceType).stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
 
     )
+
+    init {
+        discovery.startDiscovering(serviceType)
+    }
 }
 
 @Composable
 fun rememberDisplaysScreenViewModel(
-    discovery: DisplayDiscovery,
+    discovery: ScreenDiscovery,
     serviceType: String
 ): DisplaysScreenViewModel {
     return viewModel {

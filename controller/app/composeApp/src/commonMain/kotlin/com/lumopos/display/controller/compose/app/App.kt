@@ -8,8 +8,9 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
+import com.lumopos.display.controller.ScreenDiscovery
 import com.lumopos.display.controller.compose.app.navigation.counterEntry
-import com.lumopos.display.controller.compose.app.navigation.displaysEntry
+import com.lumopos.display.controller.compose.app.navigation.screensEntry
 import com.lumopos.display.controller.compose.app.theme.AppTheme
 import com.lumopos.display.discovery.DisplayDiscovery
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -35,7 +36,7 @@ internal val controllerSavedStateConfiguration = SavedStateConfiguration {
 }
 
 @Composable
-expect fun rememberDisplayDiscovery(): DisplayDiscovery
+expect fun rememberDisplayDiscovery(): ScreenDiscovery
 
 @Composable
 fun App() {
@@ -51,7 +52,7 @@ fun App() {
             ),
             entryProvider = entryProvider {
                 counterEntry(appBackStack)
-                displaysEntry(appBackStack, discovery)
+                screensEntry(appBackStack, discovery)
             }
         )
     }

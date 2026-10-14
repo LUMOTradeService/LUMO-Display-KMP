@@ -26,41 +26,46 @@ actual class ScreenDiscovery(
         Context.NSD_SERVICE
     ) as NsdManager
     private var discoveryListeners: MutableMap<String, NsdManager.DiscoveryListener> = mutableMapOf()
-    private var screenDiscoveryListeners: MutableList<ScreenDiscoveryListener> = mutableListOf()
+    private var screenDiscoveryListeners: MutableList<Listener> = mutableListOf()
     private val discoveredScreens: MutableMap<String, MutableList<Screen>> = mutableMapOf()
 
     private fun foundScreen(
         service: NsdServiceInfo,
-        discoveredScreens: MutableList<Screen>,
+        screens: MutableList<Screen>,
     ) {
         val screenId = service.id ?: Uuid.random()
 
-        discoveredScreens.removeAll { it.serviceName == service.serviceName || it.id == screenId }
-        discoveredScreens.add(
-            Screen(
-                id = screenId,
-                appName = service.appName,
-                appAuthor = service.appAuthor,
-                version = service.appVersion,
-                serviceName = service.serviceName,
-                serviceType = service.serviceType,
-                ipAddress = service.ipAddress,
-                port = service.port
-            )
+        screens.removeAll { it.serviceName == service.serviceName || it.id == screenId }
+
+        val screen = Screen(
+            id = screenId,
+            appName = service.appName,
+            appAuthor = service.appAuthor,
+            version = service.appVersion,
+            serviceName = service.serviceName,
+            serviceType = service.serviceType,
+            ipAddress = service.ipAddress,
+            port = service.port
         )
+
+        screens.add(screen)
+
+        screenDiscoveryListeners.forEach { listener ->
+            listener.onServiceFound(screen)
+        }
     }
 
-    private fun resolveLegacy(
+    private fun resolveFoundServiceLegacy(
         nsdManager: NsdManager,
         service: NsdServiceInfo,
-        discoveredScreens: MutableList<Screen>
+        screens: MutableList<Screen>
     ) {
         @Suppress("DEPRECATION")
         nsdManager.resolveService(service, object : NsdManager.ResolveListener {
             override fun onServiceResolved(resolved: NsdServiceInfo) {
                 foundScreen(
                     service = resolved,
-                    discoveredScreens = discoveredScreens
+                    screens = screens
                 )
             }
 
@@ -72,54 +77,52 @@ actual class ScreenDiscovery(
 
     private fun resolveFoundService(
         nsdManager: NsdManager,
-        service: NsdServiceInfo
+        service: NsdServiceInfo,
+        screens: MutableList<Screen>
     ) {
-        discoveredScreens[service.serviceType]?.let { screens ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && SdkExtensions.getExtensionVersion(
-                    Build.VERSION_CODES.TIRAMISU
-                ) >= 7
-            ) {
-                nsdManager.registerServiceInfoCallback(
-                    service,
-                    Runnable::run,
-                    object : NsdManager.ServiceInfoCallback {
-                        override fun onServiceUpdated(updated: NsdServiceInfo) {
-                            foundScreen(
-                                service = updated,
-                                discoveredScreens = screens
-                            )
-                        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && SdkExtensions.getExtensionVersion(
+                Build.VERSION_CODES.TIRAMISU
+            ) >= 7
+        ) {
+            nsdManager.registerServiceInfoCallback(
+                service,
+                Runnable::run,
+                object : NsdManager.ServiceInfoCallback {
+                    override fun onServiceUpdated(updated: NsdServiceInfo) {
+                        foundScreen(
+                            service = updated,
+                            screens = screens
+                        )
+                    }
 
-                        override fun onServiceInfoCallbackRegistrationFailed(p0: Int) {
-                            throw RuntimeException("Registration failed with error code: $p0")
-                        }
+                    override fun onServiceInfoCallbackRegistrationFailed(p0: Int) {
+                        throw RuntimeException("Registration failed with error code: $p0")
+                    }
 
-                        override fun onServiceInfoCallbackUnregistered() {}
-                        override fun onServiceLost() {
-                            nsdManager.unregisterServiceInfoCallback(this)
-                        }
-                    })
-            } else {
-                resolveLegacy(nsdManager, service, screens)
-            }
+                    override fun onServiceInfoCallbackUnregistered() {}
+                    override fun onServiceLost() {
+                        nsdManager.unregisterServiceInfoCallback(this)
+                    }
+                })
+        } else {
+            resolveFoundServiceLegacy(nsdManager, service, screens)
         }
     }
 
     private fun resolveLostService(
-        service: NsdServiceInfo
+        service: NsdServiceInfo,
+        screens: MutableList<Screen>
     ) {
-        discoveredScreens[service.serviceType]?.let { screens ->
-            screenDiscoveryListeners.forEach {
-                screens.find { screen -> screen.serviceName == service.serviceName }?.let { screen ->
-                    screens.remove(screen)
-                    it.onServiceLost(screen)
-                }
+        screenDiscoveryListeners.forEach {
+            screens.find { screen -> screen.serviceName == service.serviceName }?.let { screen ->
+                screens.remove(screen)
+                it.onServiceLost(screen)
             }
         }
     }
 
     actual fun screens(serviceType: String): Flow<List<Screen>> = callbackFlow {
-        val listener = object : ScreenDiscoveryListener {
+        val listener = object : Listener {
                 private fun update() {
                     discoveredScreens[serviceType]?.let {
                         trySend(it.toList())
@@ -142,44 +145,49 @@ actual class ScreenDiscovery(
 
                 }
 
-                override fun onStartDiscoveryFailed(errorCode: Int) {
+                override fun onDiscoveryFailed(errorCode: String) {
 
                 }
 
-                override fun onStopDiscoveryFailed(errorCode: Int) {
-
-                }
-
-            }
+        }
 
         screenDiscoveryListeners.add(listener)
 
         awaitClose {
-            stopDiscovering(serviceType)
             screenDiscoveryListeners.remove(listener)
         }
     }.flowOn(Dispatchers.IO)
 
     actual fun startDiscovering(serviceType: String) {
+        if (discoveryListeners.contains(serviceType)) return
+
         val discoveryListener = object : NsdManager.DiscoveryListener {
             override fun onServiceFound(service: NsdServiceInfo) {
-                discoveredScreens.getOrPut(serviceType) { mutableListOf() }
-                resolveFoundService(nsdManager, service)
+                val screens = discoveredScreens.getOrPut(serviceType) { mutableListOf() }
+                resolveFoundService(nsdManager, service, screens)
             }
             override fun onServiceLost(service: NsdServiceInfo) {
-                resolveLostService(service)
+                discoveredScreens[serviceType]?.let { screens ->
+                    resolveLostService(service, screens)
+                }
             }
             override fun onDiscoveryStarted(serviceType: String) {
                 discoveredScreens[serviceType]?.clear()
             }
             override fun onDiscoveryStopped(serviceType: String) {
-
+                discoveredScreens[serviceType]?.clear()
             }
             override fun onStartDiscoveryFailed(serviceType: String, errorCode: Int) {
-
+                screenDiscoveryListeners.forEach { listener ->
+                    listener.onDiscoveryFailed(errorCode.toString())
+                }
+                throw RuntimeException("Service discovery $serviceType failed to start ($errorCode).")
             }
             override fun onStopDiscoveryFailed(serviceType: String, errorCode: Int) {
-
+                screenDiscoveryListeners.forEach { listener ->
+                    listener.onDiscoveryFailed(errorCode.toString())
+                }
+                throw RuntimeException("Service discovery $serviceType failed to stop ($errorCode)")
             }
         }
 
@@ -205,18 +213,16 @@ actual class ScreenDiscovery(
     }
 
     actual fun stopDiscovering(serviceType: String) {
-        discoveryListeners[serviceType]?.let {
+        discoveryListeners.remove(serviceType)?.let {
             nsdManager.stopServiceDiscovery(it)
         }
-        discoveryListeners.remove(serviceType)
     }
 
-    actual interface ScreenDiscoveryListener {
+    actual interface Listener {
         actual fun onServiceFound(screen: Screen)
         actual fun onServiceLost(screen: Screen)
         actual fun onDiscoveryStarted()
         actual fun onDiscoveryStopped()
-        actual fun onStartDiscoveryFailed(errorCode: Int)
-        actual fun onStopDiscoveryFailed(errorCode: Int)
+        actual fun onDiscoveryFailed(errorCode: String)
     }
 }
